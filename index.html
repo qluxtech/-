@@ -3,37 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M&A-Swarm | 日本最高峰の自律型M&Aターミナル</title>
+  <title>M&A-SWARM | Institutional Autonomous Asset Exchange</title>
   <style>
     :root {
-      --bg-dark: #080b11;
-      --panel-bg: rgba(15, 23, 42, 0.75);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --text-main: #f1f5f9;
-      --text-sub: #94a3b8;
+      --bg-core: #04060a;
+      --panel-bg: rgba(13, 19, 31, 0.85);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --panel-border-glow: rgba(56, 189, 248, 0.3);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
       --accent-cyan: #38bdf8;
       --accent-emerald: #10b981;
       --accent-gold: #f59e0b;
-      --glow-color: rgba(56, 189, 248, 0.15);
+      --accent-purple: #a855f7;
+      --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
+      background-color: var(--bg-core);
+      color: var(--text-primary);
       min-height: 100vh;
-      overflow-x: hidden;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
 
-    /* 背景の1/fゆらぎキャンバス */
+    /* 背景グラデーション・キャンバス */
     #ambientCanvas {
       position: fixed;
       top: 0;
@@ -44,399 +48,448 @@
       pointer-events: none;
     }
 
-    /* ターミナル全体レイアウト */
-    .terminal-container {
+    .app-wrapper {
       position: relative;
       z-index: 1;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
-      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      min-height: 100vh;
+      padding: 16px;
+      gap: 16px;
+      max-width: 1800px;
+      margin: 0 auto;
+      width: 100%;
     }
 
-    /* ヘッダー */
+    /* 超一流企業風・トップナビゲーション */
     header {
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 14px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--panel-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      padding: 16px 28px;
-      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    .brand {
+    .nav-brand {
       display: flex;
       align-items: center;
       gap: 16px;
     }
 
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+    .brand-logo {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .live-indicator {
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.8rem;
+    }
+
+    .status-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.8rem;
-      color: var(--accent-emerald);
-      background: rgba(16, 185, 129, 0.1);
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--text-secondary);
     }
 
     .live-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent-emerald);
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-emerald);
+      background: var(--accent-emerald);
+      box-shadow: 0 0 12px var(--accent-emerald);
+      animation: pulse 2s infinite;
     }
 
-    /* メイン2カラム構成 */
-    .main-grid {
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* 大容量 4カラム・エンタープライズ・レイアウト */
+    .dashboard-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 24px;
+      grid-template-columns: 1.2fr 1.8fr 1fr;
+      gap: 16px;
+      flex-grow: 1;
     }
 
-    @media (max-width: 1024px) {
-      .main-grid { grid-template-columns: 1fr; }
+    @media (max-width: 1280px) {
+      .dashboard-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 860px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
     }
 
-    /* パネル共通設定 */
-    .panel {
+    /* 重厚パネル共通スタイル */
+    .panel-card {
       background: var(--panel-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 24px;
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      transition: border-color 0.3s ease;
+    }
+
+    .panel-card:hover {
+      border-color: var(--panel-border-glow);
     }
 
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 12px;
     }
 
-    /* リアルタイム案件ボード */
-    .deal-stream {
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 指標サマリーカード */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
 
-    .deal-card {
+    .metric-box {
       background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-color);
-      padding: 16px 20px;
-      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* 案件ストリーム（カードデザイン刷新） */
+    .deal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .deal-item {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
     }
 
-    .deal-card:hover {
+    .deal-item:hover {
+      background: rgba(56, 189, 248, 0.04);
       border-color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.03);
-      transform: translateY(-2px);
     }
 
-    .deal-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-
-    .deal-meta {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-    }
-
-    .deal-price {
-      text-align: right;
-    }
-
-    .price-value {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent-gold);
-    }
-
-    .price-fee {
-      font-size: 0.75rem;
-      color: var(--accent-emerald);
-    }
-
-    /* インタラクティブ・査定シミュレーター（客が触り続ける仕掛け） */
-    .simulator {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .input-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--text-sub);
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent-cyan);
-    }
-
-    .sim-result {
-      background: rgba(56, 189, 248, 0.05);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .sim-price {
-      font-size: 2rem;
-      font-weight: 800;
+    .deal-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.1);
       color: var(--accent-cyan);
-      margin: 8px 0;
+      margin-bottom: 6px;
     }
 
-    /* リアルタイム・アクティビティログ（常駐用） */
-    .activity-log {
-      font-family: monospace;
-      font-size: 0.78rem;
-      color: var(--text-sub);
+    /* リアルタイムAIコンソール（端末ログ） */
+    .console-box {
+      background: #020408;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      height: 220px;
+      overflow-y: hidden;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      max-height: 200px;
-      overflow-y: hidden;
+      gap: 6px;
     }
 
-    .log-item {
+    .console-line {
       display: flex;
       gap: 10px;
-      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
     }
 
-    .log-time { color: var(--accent-cyan); }
-
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      to { opacity: 1; }
+    }
+
+    /* インタラクティブシミュレーター（スライダー改善） */
+    .sim-card {
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.05) 0%, rgba(0,0,0,0) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #1e293b;
+      outline: none;
+      accent-color: var(--accent-cyan);
+      margin: 12px 0;
+    }
+
+    /* フッター：即時決済・トランザクション */
+    footer {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
     }
   </style>
 </head>
 <body>
 
-  <!-- 背景：自然界の1/fゆらぎを描画する環境キャンバス -->
   <canvas id="ambientCanvas"></canvas>
 
-  <div class="terminal-container">
-    <!-- ヘッダー -->
+  <div class="app-wrapper">
+    <!-- 超一流機関投資家向け ナビゲーション -->
     <header>
-      <div class="brand">
-        <div class="brand-title">M&A-SWARM ターミナル</div>
+      <div class="nav-brand">
+        <canvas id="corePulse" width="28" height="28"></canvas>
+        <div class="brand-logo">M&A-SWARM ENTERPRISE</div>
       </div>
-      <div class="live-indicator">
-        <div class="live-dot"></div>
-        <span>AI SWARM ENGINE 稼働中</span>
+      <div class="system-status">
+        <div class="status-item"><div class="live-dot"></div> AI AGENTS: 128 NODE ACTIVE</div>
+        <div class="status-item" style="color: var(--accent-cyan);">PAYOUT ENGINE: ON-CHAIN READY</div>
+        <div class="status-item" style="color: var(--text-muted);">LATENCY: 12ms</div>
       </div>
     </header>
 
-    <!-- メイングリッド -->
-    <div class="main-grid">
-      <!-- 左側：リアルタイム市場ストリーム -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>リアルタイム自動査定・マッチング市場</span>
-          <span style="color: var(--accent-cyan)">自動更新中</span>
-        </div>
-        <div class="deal-stream" id="dealStream">
-          <!-- JSで自動生成＆ストリーミング追加 -->
-        </div>
+    <!-- 指標サマリーバー -->
+    <div class="metrics-row">
+      <div class="metric-box">
+        <div class="metric-label">総取引アセット評価額 (日本市場)</div>
+        <div class="metric-val" style="color: var(--accent-cyan);">¥ 428.5 億円</div>
       </div>
-
-      <!-- 右側：客が常駐して触る「即時売却査定シミュレーター」 -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>AI自律査定シミュレーター</span>
-        </div>
-        <div class="simulator">
-          <div class="input-group">
-            <div class="input-label">
-              <span>営業利益 (年間)</span>
-              <span id="profitVal">¥2,000万</span>
-            </div>
-            <input type="range" id="profitInput" min="500" max="10000" step="100" value="2000">
-          </div>
-
-          <div class="input-group">
-            <div class="input-label">
-              <span>保有資産 / ノウハウ強み</span>
-              <span id="assetVal">中程度</span>
-            </div>
-            <input type="range" id="assetInput" min="1" max="3" step="1" value="2">
-          </div>
-
-          <div class="sim-result">
-            <div style="font-size: 0.8rem; color: var(--text-sub);">AI予測・推定売却価値</div>
-            <div class="sim-price" id="calcPrice">¥ 7,800 万</div>
-            <div style="font-size: 0.75rem; color: var(--accent-emerald);" id="calcFee">あなたの予想獲得手数料 (5%): ¥390万円</div>
-          </div>
-        </div>
-
-        <div class="panel-header" style="margin-top: 12px;">
-          <span>AI Swarm アクティビティ</span>
-        </div>
-        <div class="activity-log" id="logContainer">
-          <!-- JSで自動でロゴが追加され続ける -->
-        </div>
+      <div class="metric-box">
+        <div class="metric-label">自動確定成功報酬 (当月予想累計)</div>
+        <div class="metric-val" style="color: var(--accent-emerald);">¥ 2,142 万円</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">自律M&A成約率 (AIパイプライン)</div>
+        <div class="metric-val" style="color: var(--accent-gold);">94.2 %</div>
       </div>
     </div>
+
+    <!-- 3カラム メイングリッド（隙間なく配置） -->
+    <div class="dashboard-grid">
+      
+      <!-- カラム1: 案件自動マイニング・パイプライン -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <span class="panel-title">LIVE ASSET MARKET (自動査定済み)</span>
+          <span style="font-size:0.75rem; color:var(--accent-cyan);">REALTIME STREAM</span>
+        </div>
+        <div class="deal-list" id="dealList">
+          <!-- JSで高密度案件カードを動的生成 -->
+        </div>
+      </div>
+
+      <!-- カラム2: AI Swarm実行状況 & ノードモニタリング -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <span class="panel-title">SWARM AUTONOMOUS WORKFLOW</span>
+          <span style="font-size:0.75rem; color:var(--accent-emerald);">PROCESSING</span>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="font-size:0.8rem; color:var(--text-secondary)">自律型タスク分散エージェント稼働ログ</div>
+          <div class="console-box" id="consoleBox">
+            <!-- ターミナルログが秒単位で流れる -->
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.85rem; font-weight:700;">即時企業価値＆獲得手数料シミュレーター</span>
+            <span style="font-size:0.75rem; color:var(--accent-gold);" id="simFeeTag">予想手数料: ¥450万円</span>
+          </div>
+          <input type="range" class="range-slider" id="simSlider" min="1000" max="50000" step="500" value="9000">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+            <span>想定営業利益: <b id="simProfitText" style="color:#fff;">¥9,000万円</b></span>
+            <span>算出アセット価値: <b id="simValText" style="color:var(--accent-cyan);">¥3.6億円</b></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- カラム3: 決済・収益自動送金モジュール -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <span class="panel-title">AUTO PAYOUT & ZERO SETTLEMENT</span>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.02); padding:16px; border-radius:8px; border:1px solid var(--panel-border);">
+          <div style="font-size:0.75rem; color:var(--text-muted);">次回自動振り込み予定額 (Stripe / On-Chain)</div>
+          <div style="font-size:1.8rem; font-weight:800; color:var(--accent-emerald); margin:8px 0;">¥ 8,450,000</div>
+          <div style="font-size:0.7rem; color:var(--text-secondary);">決済確定タイミング: 毎月10日 / 契約即時清算</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">アクティブノード決済セキュリティ</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.4;">
+            すべてのM&A売買契約および手数料徴収は、スマートコントラクトおよびStripe Connect APIを介してゼロバッファで指定口座に送金されます。
+          </div>
+        </div>
+
+        <button style="margin-top:auto; background:linear-gradient(135deg, var(--accent-cyan), #0284c7); color:#fff; border:none; padding:14px; border-radius:8px; font-weight:700; cursor:pointer;">
+          即時送金プロトコル手動実行
+        </button>
+      </div>
+
+    </div>
+
+    <!-- フッター -->
+    <footer>
+      <div>M&A-SWARM PLATFORM v4.2 PROD — INSTITUTIONAL EDITION</div>
+      <div>SECURED BY HIGH-FREQUENCY AI AGENT SWARM</div>
+    </footer>
   </div>
 
   <script>
-    /* --- 1. 1/fゆらぎ背景（アンビエントオーガニック描画） --- */
+    /* --- 1. 1/fゆらぎ 有機的アンビエント描画エンジン --- */
     const canvas = document.getElementById('ambientCanvas');
     const ctx = canvas.getContext('2d');
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resize);
     resize();
 
     let t = 0;
-    // 間欠的1/fカオスノイズ発生器
-    function getNoise(time) {
-      return Math.sin(time) * Math.sin(time * 0.3) * Math.cos(time * 0.05);
-    }
-
-    function drawAmbient() {
-      t += 0.005;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const n1 = getNoise(t) * 100;
-      const n2 = getNoise(t + 100) * 100;
-
-      const grad = ctx.createRadialGradient(
-        canvas.width * 0.3 + n1, canvas.height * 0.3 + n2, 50,
-        canvas.width * 0.5, canvas.height * 0.5, canvas.width * 0.8
-      );
-
-      grad.addColorStop(0, 'rgba(56, 189, 248, 0.06)');
-      grad.addColorStop(0.5, 'rgba(129, 140, 248, 0.03)');
-      grad.addColorStop(1, 'rgba(8, 11, 17, 0)');
-
+    function draw() {
+      t += 0.003;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const x = canvas.width * 0.5 + Math.sin(t) * 120;
+      const y = canvas.height * 0.4 + Math.cos(t * 0.7) * 80;
+      const grad = ctx.createRadialGradient(x, y, 100, canvas.width/2, canvas.height/2, canvas.width*0.7);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.08)');
+      grad.addColorStop(0.5, 'rgba(168, 85, 247, 0.03)');
+      grad.addColorStop(1, 'rgba(4, 6, 10, 0)');
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      requestAnimationFrame(drawAmbient);
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      requestAnimationFrame(draw);
     }
-    drawAmbient();
+    draw();
 
-    /* --- 2. リアルタイム・案件流し込み（常駐フック） --- */
-    const initialDeals = [
-      { title: "東京都 / 建設業（年商1.2億・後継者不在）", price: "4,800万円", fee: "240万円" },
-      { title: "大阪府 / 士業法人（顧問先40社・自動化済）", price: "3,200万円", fee: "160万円" },
-      { title: "福岡県 / Webマーケ代理店（ストック収益メイン）", price: "6,500万円", fee: "325万円" }
+    /* --- 2. 1/fコアインジケーター --- */
+    const coreCanvas = document.getElementById('corePulse');
+    const coreCtx = coreCanvas.getContext('2d');
+    function drawCore() {
+      const val = (Math.sin(Date.now() * 0.003) + 1) / 2;
+      coreCtx.clearRect(0,0,28,28);
+      coreCtx.beginPath();
+      coreCtx.arc(14, 14, 6 + val * 4, 0, Math.PI * 2);
+      coreCtx.fillStyle = '#38bdf8';
+      coreCtx.shadowBlur = 10;
+      coreCtx.shadowColor = '#38bdf8';
+      coreCtx.fill();
+      requestAnimationFrame(drawCore);
+    }
+    drawCore();
+
+    /* --- 3. 高密度案件データストリーム --- */
+    const deals = [
+      { tag: "建設・土木 (年商3.4億)", title: "関東大手ゼネコン一次請け / 後継者不在", price: "1億8,000万円", fee: "900万円" },
+      { tag: "医療・クリニック (年商1.8億)", title: "都内美容皮膚科 / 完全自動予約システム導入済み", price: "1億2,500万円", fee: "625万円" },
+      { tag: "SaaS・IT (年商8,500万)", title: "AI特化型ライティングAPIツール (MRR 600万)", price: "2億1,000万円", fee: "1,050万円" },
+      { tag: "不動産アセット (年商2.1億)", title: "京都町家リノベーションホテル 4棟一括", price: "3億4,000万円", fee: "1,700万円" }
     ];
 
-    const dealStream = document.getElementById('dealStream');
-
-    function renderDeals() {
-      dealStream.innerHTML = initialDeals.map(d => `
-        <div class="deal-card">
-          <div>
-            <div class="deal-title">${d.title}</div>
-            <div class="deal-meta">AI簡易デューデリ完了 • バイヤー3社打診中</div>
-          </div>
-          <div class="deal-price">
-            <div class="price-value">¥ ${d.price}</div>
-            <div class="price-fee">確定予想手数料: ¥ ${d.fee}</div>
-          </div>
+    document.getElementById('dealList').innerHTML = deals.map(d => `
+      <div class="deal-item">
+        <div>
+          <span class="deal-tag">${d.tag}</span>
+          <div style="font-size:0.85rem; font-weight:700;">${d.title}</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">簡易DD完了 • バイヤー6社打診中</div>
         </div>
-      `).join('');
-    }
-    renderDeals();
+        <div style="text-align:right;">
+          <div style="font-size:0.95rem; font-weight:800; color:var(--accent-gold);">${d.price}</div>
+          <div style="font-size:0.72rem; color:var(--accent-emerald);">確定報酬: ${d.fee}</div>
+        </div>
+      </div>
+    `).join('');
 
-    /* --- 3. 客が触り続けるインタラクティブ査定 --- */
-    const profitInput = document.getElementById('profitInput');
-    const assetInput = document.getElementById('assetInput');
-
-    function updateCalc() {
-      const profit = parseInt(profitInput.value);
-      const assetMult = parseFloat(assetInput.value) * 0.5 + 1.0;
-      
-      document.getElementById('profitVal').innerText = `¥${profit.toLocaleString()}万`;
-      
-      const assetLabels = ["低（ノウハウのみ）", "中程度（システム有）", "高（強い顧客基盤）"];
-      document.getElementById('assetVal').innerText = assetLabels[assetInput.value - 1];
-
-      // 簡易企業価値算定ロジック（営業利益×マルチプル）
-      const estimatedValue = Math.round(profit * (2.5 + assetMult));
-      const estimatedFee = Math.round(estimatedValue * 0.05);
-
-      document.getElementById('calcPrice').innerText = `¥ ${estimatedValue.toLocaleString()} 万`;
-      document.getElementById('calcFee').innerText = `あなたの予想獲得手数料 (5%): ¥${estimatedFee.toLocaleString()}万円`;
-    }
-
-    profitInput.addEventListener('input', updateCalc);
-    assetInput.addEventListener('input', updateCalc);
-
-    /* --- 4. リアルタイム・アクティビティログ（常駐用ライブ感） --- */
-    const logs = [
-      "Valuation Agent: 福岡県建設業の決算書スクレイピング完了",
-      "Matching Agent: 買収候補企業（東証プライム子会社）へ自動オファー送信",
-      "DD Agent: 過去の法務リスク・登記簿異常なしを検知",
-      "Stripe Agent: 月額ライセンス料（¥300,000）の自動決済が完了"
+    /* --- 4. リアルタイム・コンソールログ --- */
+    const consoleBox = document.getElementById('consoleBox');
+    const logMessages = [
+      "Valuation Agent: 決算データ自動解析完了 - 評価マルチプル 3.8x 適用",
+      "Matching Agent: 買収ニーズ条件に一致するバイヤー企業 14社抽出",
+      "Legal Agent: 登記簿・訴訟リスク・社会保険未払い検知なし (クリーン)",
+      "Settlement Agent: マイクロ決済チャネル開通 - 即時清算準備完了"
     ];
 
-    const logContainer = document.getElementById('logContainer');
-
-    function addLog() {
-      const now = new Date();
-      const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-      const randomLog = logs[Math.floor(Math.random() * logs.length)];
-
-      const item = document.createElement('div');
-      item.className = 'log-item';
-      item.innerHTML = `<span class="log-time">[${timeStr}]</span> <span>${randomLog}</span>`;
-
-      logContainer.prepend(item);
-      if (logContainer.children.length > 5) {
-        logContainer.removeChild(logContainer.lastChild);
-      }
+    function appendLog() {
+      const time = new Date().toISOString().split('T')[1].slice(0,8);
+      const msg = logMessages[Math.floor(Math.random() * logMessages.length)];
+      const line = document.createElement('div');
+      line.className = 'console-line';
+      line.innerHTML = `<span style="color:var(--text-muted)">[${time}]</span> <span>${msg}</span>`;
+      consoleBox.prepend(line);
+      if (consoleBox.children.length > 8) consoleBox.removeChild(consoleBox.lastChild);
     }
+    setInterval(appendLog, 2500);
+    appendLog();
 
-    // 4秒ごとに新しいログを追加して常に動いている感を作成
-    setInterval(addLog, 4000);
-    addLog();
+    /* --- 5. インタラクティブシミュレーター --- */
+    const slider = document.getElementById('simSlider');
+    slider.addEventListener('input', (e) => {
+      const profit = parseInt(e.target.value);
+      const val = Math.round(profit * 4.0);
+      const fee = Math.round(val * 0.05);
+      document.getElementById('simProfitText').innerText = `¥${profit.toLocaleString()}万円`;
+      document.getElementById('simValText').innerText = `¥${(val/10000).toFixed(2)}億円`;
+      document.getElementById('simFeeTag').innerText = `予想手数料: ¥${fee.toLocaleString()}万円`;
+    });
   </script>
 </body>
 </html>
