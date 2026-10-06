@@ -3,351 +3,335 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>M&A-SWARM ENTERPRISE | 日本最高峰自律型M&Aターミナル</title>
+  <title>M&A-SWARM | 日本一簡単な即時売買マーケットプレイス</title>
   <style>
     :root {
-      --bg-core: #030712;
-      --panel-bg: rgba(17, 24, 39, 0.85);
-      --panel-border: rgba(255, 255, 255, 0.1);
-      --panel-border-glow: rgba(56, 189, 248, 0.4);
-      --text-primary: #f9fafb;
-      --text-secondary: #9ca3af;
-      --text-muted: #4b5563;
+      --bg-core: #090d16;
+      --panel-bg: rgba(20, 29, 47, 0.9);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text-main: #ffffff;
+      --text-sub: #94a3b8;
       --accent-cyan: #38bdf8;
-      --accent-emerald: #10b981;
-      --accent-gold: #f59e0b;
-      --accent-purple: #818cf8;
-      --font-mono: "SF Mono", "JetBrains Mono", Consolas, monospace;
+      --accent-green: #10b981;
+      --accent-orange: #f97316;
+      --font-mono: "JetBrains Mono", monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
 
     body {
       background-color: var(--bg-core);
-      color: var(--text-primary);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
+      padding: 12px;
+      gap: 12px;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    /* 1/fゆらぎ背景キャンバス */
-    #ambientCanvas {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      z-index: 0; pointer-events: none;
-    }
-
-    .app-container {
-      position: relative; z-index: 1;
-      max-width: 1600px; margin: 0 auto; width: 100%;
-      padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 100vh;
-    }
-
-    /* エンタープライズ・ヘッダー */
+    /* ヘッダー */
     header {
-      background: var(--panel-bg); backdrop-filter: blur(20px);
-      border: 1px solid var(--panel-border); border-radius: 12px;
-      padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--panel-border);
     }
 
-    .brand-group { display: flex; align-items: center; gap: 12px; }
-    .brand-title { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.05em; background: linear-gradient(135deg, #fff, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    .status-badge {
-      display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--accent-emerald);
-      background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 4px 12px; border-radius: 20px;
-    }
-    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); }
-
-    /* メイン2×2 グリッドレイアウト */
-    .dashboard-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; flex-grow: 1;
-    }
-    @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
-
-    .panel {
-      background: var(--panel-bg); backdrop-filter: blur(16px);
-      border: 1px solid var(--panel-border); border-radius: 12px;
-      padding: 20px; display: flex; flex-direction: column; gap: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: border-color 0.3s;
-    }
-    .panel:hover { border-color: var(--panel-border-glow); }
-
-    .panel-header {
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--panel-border); padding-bottom: 10px;
-      font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.05em;
+    .brand {
+      font-size: 1.1rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* 案件ストリーム */
-    .deal-card {
-      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--panel-border);
-      border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .deal-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
-    .deal-sub { font-size: 0.72rem; color: var(--text-muted); }
-    .deal-price { text-align: right; font-size: 1rem; font-weight: 800; color: var(--accent-gold); }
-
-    /* AIターミナルログ */
-    .terminal-box {
-      background: #020408; border: 1px solid var(--panel-border); border-radius: 8px;
-      padding: 12px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan);
-      height: 160px; overflow-y: hidden; display: flex; flex-direction: column; gap: 6px;
+    .user-badge {
+      font-size: 0.75rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-weight: 700;
     }
 
-    /* 最終承認・口座入金（Human-in-the-Loop）モジュール */
-    .approval-box {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(3, 7, 18, 0) 100%);
-      border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 16px;
-      display: flex; flex-direction: column; gap: 10px;
+    /* メインアクション：売る / 買う 超巨大2大ボタン */
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 8px 0;
     }
-    .approve-btn {
-      background: linear-gradient(135deg, var(--accent-emerald), #059669);
-      color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: 800;
-      font-size: 0.9rem; cursor: pointer; transition: transform 0.1s, opacity 0.2s;
-      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-    }
-    .approve-btn:active { transform: scale(0.98); }
 
-    /* 法的情報モーダル & フッター */
+    .action-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(0,0,0,0));
+      border: 1px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+    }
+    .action-card:active { transform: scale(0.97); }
+
+    .action-card.sell {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(0,0,0,0));
+      border-color: var(--accent-orange);
+    }
+
+    .action-title {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .action-sub {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+    }
+
+    /* 超爆速フィルタータグ */
+    .filter-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      white-space: nowrap;
+    }
+
+    .tag-btn {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .tag-btn.active {
+      background: var(--accent-cyan);
+      color: #000;
+      font-weight: 800;
+      border-color: var(--accent-cyan);
+    }
+
+    /* 案件カードリスト (メルカリ風・超高見栄え) */
+    .market-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-badge {
+      font-size: 0.65rem;
+      background: rgba(255,255,255,0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--accent-cyan);
+    }
+
+    .item-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 4px;
+      border-top: 1px dashed var(--panel-border);
+      padding-top: 8px;
+    }
+
+    .item-price {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--accent-green);
+    }
+
+    .buy-btn {
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* 振込指示・確定報酬エリア */
+    .payout-card {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .payout-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-green), #059669);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    /* フッター法的表記 */
     footer {
-      background: var(--panel-bg); border: 1px solid var(--panel-border);
-      border-radius: 12px; padding: 14px 20px; display: flex; justify-content: space-between;
-      align-items: center; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 10px;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
     }
-    .footer-links { display: flex; gap: 16px; }
-    .footer-link { color: var(--text-secondary); text-decoration: none; cursor: pointer; transition: color 0.2s; }
-    .footer-link:hover { color: var(--accent-cyan); }
 
-    /* モーダル表示 */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 100;
-      display: none; justify-content: center; align-items: center; padding: 20px;
+    .footer-link {
+      color: var(--text-sub);
+      text-decoration: none;
+      cursor: pointer;
     }
-    .modal-content {
-      background: #0d131f; border: 1px solid var(--panel-border); border-radius: 12px;
-      max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 24px;
-      color: var(--text-primary); font-size: 0.85rem; line-height: 1.6;
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
-    .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <canvas id="ambientCanvas"></canvas>
+  <!-- トップブランド -->
+  <header>
+    <div class="brand">M&A-SWARM EXPRESS</div>
+    <div class="user-badge">● 即時AI査定 & 決済対応</div>
+  </header>
 
-  <div class="app-container">
-    <!-- ヘッダー -->
-    <header>
-      <div class="brand-group">
-        <canvas id="corePulse" width="24" height="24"></canvas>
-        <div class="brand-title">M&A-SWARM ENTERPRISE</div>
-      </div>
-      <div class="status-badge">
-        <div class="pulse-dot"></div>
-        <span>AI SWARM ENGINE: READY FOR PAYOUT</span>
-      </div>
-    </header>
-
-    <!-- メイン2×2レイアウト -->
-    <div class="dashboard-grid">
-      
-      <!-- Panel 1: パイプライン・自動査定市場 -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>AI自律採掘市場 (自動DD完了)</span>
-          <span style="color:var(--accent-cyan)">LIVE REFRESH</span>
-        </div>
-        <div class="deal-card">
-          <div>
-            <div class="deal-title">関東大手建設業（年商3.4億）</div>
-            <div class="deal-sub">AI決算解析完了 • 買手4社自動打診中</div>
-          </div>
-          <div>
-            <div class="deal-price">¥ 1億8,000万</div>
-            <div style="font-size:0.7rem; color:var(--accent-emerald); text-align:right;">成功報酬: ¥900万</div>
-          </div>
-        </div>
-        <div class="deal-card">
-          <div>
-            <div class="deal-title">都内美容クリニック（完全自動化済）</div>
-            <div class="deal-sub">法務リスクなし • 簡易DD適合</div>
-          </div>
-          <div>
-            <div class="deal-price">¥ 1億2,500万</div>
-            <div style="font-size:0.7rem; color:var(--accent-emerald); text-align:right;">成功報酬: ¥625万</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel 2: AI Swarm リアルタイム実行ターミナル -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>SWARM AGENT WORKFLOW LOG</span>
-          <span style="color:var(--accent-emerald)">ACTIVE</span>
-        </div>
-        <div class="terminal-box" id="terminalLog">
-          <!-- JSで自動ログ注入 -->
-        </div>
-      </div>
-
-      <!-- Panel 3: チャート・市場トレンド -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>REALTIME TRANSACTION TREND</span>
-        </div>
-        <canvas id="trendChart" style="width:100%; height:120px;"></canvas>
-      </div>
-
-      <!-- Panel 4: 【Human-in-the-Loop】最終承認 & 口座自動出金実行 -->
-      <div class="panel">
-        <div class="panel-header">
-          <span>FINAL APPROVAL & PAYOUT GATEWAY</span>
-        </div>
-        <div class="approval-box">
-          <div style="font-size:0.75rem; color:var(--text-secondary)">AIが整えた契約・着金準備完了アセット</div>
-          <div style="font-size:1.6rem; font-weight:800; color:var(--accent-emerald);">¥ 15,250,000</div>
-          <div style="font-size:0.7rem; color:var(--text-muted)">※ 最終承認ボタンを押すことで、Stripe API / 銀行振込経由で指定口座へ自動即時送金されます。</div>
-          <button class="approve-btn" onclick="executePayout()">承認して指定口座へ即時入金実行</button>
-        </div>
-      </div>
-
+  <!-- ワンタップで始まる「売る・買う」超簡単アクション -->
+  <div class="hero-actions">
+    <div class="action-card sell" onclick="quickSell()">
+      <div class="action-title" style="color:var(--accent-orange)">🚀 会社・事業を売る</div>
+      <div class="action-sub">AIが10秒で自動査定＆即出品</div>
     </div>
-
-    <!-- フッター & 特定商取引法などの法的表記リンク -->
-    <footer>
-      <div>© 2026 M&A-SWARM PROTOCOL Inc. All rights reserved.</div>
-      <div class="footer-links">
-        <span class="footer-link" onclick="openModal('tokusho')">特定商取引法に基づく表記</span>
-        <span class="footer-link" onclick="openModal('terms')">利用規約</span>
-        <span class="footer-link" onclick="openModal('privacy')">プライバシーポリシー</span>
-      </div>
-    </footer>
-  </div>
-
-  <!-- 法的表記 モーダルウィンドウ -->
-  <div class="modal-overlay" id="legalModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle">特定商取引法に基づく表記</h3>
-        <button class="close-btn" onclick="closeModal()">✕</button>
-      </div>
-      <div id="modalBody">
-        <!-- JSで内容を動的挿入 -->
-      </div>
+    <div class="action-card" onclick="document.getElementById('market').scrollIntoView({behavior:'smooth'})">
+      <div class="action-title" style="color:var(--accent-cyan)">🛒 買いたい事業を探す</div>
+      <div class="action-sub">全国1,420件の厳選アセット</div>
     </div>
   </div>
+
+  <!-- 爆速ワンタップカテゴリー検索 -->
+  <div class="filter-scroll">
+    <button class="tag-btn active">すべて (1,420)</button>
+    <button class="tag-btn">IT・Web・SaaS</button>
+    <button class="tag-btn">美容・クリニック</button>
+    <button class="tag-btn">飲食店・居酒屋</button>
+    <button class="tag-btn">建設・不動産</button>
+  </div>
+
+  <!-- 簡単買収マーケットプレイス -->
+  <div class="market-list" id="market">
+    
+    <div class="item-card">
+      <div class="item-header">
+        <span class="item-badge">東京都 • IT・SaaS</span>
+        <span style="font-size:0.75rem; color:var(--text-sub);">AI自動DD完了</span>
+      </div>
+      <div class="item-title">AI特化型ライティングAPIツール（月利 120万円）</div>
+      <div class="item-footer">
+        <div>
+          <div style="font-size:0.65rem; color:var(--text-sub);">希望売却価格</div>
+          <div class="item-price">¥ 1,800 万円</div>
+        </div>
+        <button class="buy-btn" onclick="quickBuy('AI特化型ライティングAPIツール', '1,800万円')">1タップで詳細・購入申請</button>
+      </div>
+    </div>
+
+    <div class="item-card">
+      <div class="item-header">
+        <span class="item-badge">大阪府 • 医療・美容</span>
+        <span style="font-size:0.75rem; color:var(--text-sub);">即時引き継ぎ可能</span>
+      </div>
+      <div class="item-title">心斎橋駅徒歩2分 美容皮膚科クリニック (完全自動予約導入済み)</div>
+      <div class="item-footer">
+        <div>
+          <div style="font-size:0.65rem; color:var(--text-sub);">希望売却価格</div>
+          <div class="item-price">¥ 2,500 万円</div>
+        </div>
+        <button class="buy-btn" onclick="quickBuy('心斎橋 美容皮膚科クリニック', '2,500万円')">1タップで詳細・購入申請</button>
+      </div>
+    </div>
+
+    <div class="item-card">
+      <div class="item-header">
+        <span class="item-badge">愛知県 • 建設・ゼネコン</span>
+        <span style="font-size:0.75rem; color:var(--text-sub);">黒字経営</span>
+      </div>
+      <div class="item-title">大手ハウスメーカー一次請け 電気設備工事会社（年商 1.8億円）</div>
+      <div class="item-footer">
+        <div>
+          <div style="font-size:0.65rem; color:var(--text-sub);">希望売却価格</div>
+          <div class="item-price">¥ 4,200 万円</div>
+        </div>
+        <button class="buy-btn" onclick="quickBuy('電気設備工事会社', '4,200万円')">1タップで詳細・購入申請</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 確定報酬・自動出金カード（管理者・ユーザー共有） -->
+  <div class="payout-card">
+    <div style="font-size:0.75rem; color:var(--text-sub)">確定売上・成功報酬のお振込準備完了額</div>
+    <div style="font-size:1.6rem; font-weight:900; color:var(--accent-green); margin:4px 0;">¥ 12,500,000</div>
+    <button class="payout-btn" onclick="alert('指定の口座（Stripe / 登録銀行）へ即時出金リクエストを送信しました。')">ワンタップで口座に送金（即時実行）</button>
+  </div>
+
+  <!-- 特定商取引法等の法的リンク完備 -->
+  <footer>
+    <span class="footer-link" onclick="alert('特定商取引法に基づく表記：M&A-SWARM 株式会社 / 東京都港区 / 決済代行：Stripe Connect')">特定商取引法に基づく表記</span>
+    <span>|</span>
+    <span class="footer-link" onclick="alert('利用規約：本サービスは自律型M&Aマッチングプラットフォームです。売買の最終確定は当事者の承認に基づきます。')">利用規約</span>
+    <span>|</span>
+    <span class="footer-link" onclick="alert('プライバシーポリシー：個人情報および企業機密は暗号化通信により保護されます。')">プライバシーポリシー</span>
+  </footer>
 
   <script>
-    /* --- 1. 背景 1/fゆらぎグラデーション描画 --- */
-    const canvas = document.getElementById('ambientCanvas');
-    const ctx = canvas.getContext('2d');
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
-
-    let t = 0;
-    function draw() {
-      t += 0.003;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      const x = canvas.width * 0.5 + Math.sin(t) * 100;
-      const y = canvas.height * 0.4 + Math.cos(t * 0.8) * 80;
-      const grad = ctx.createRadialGradient(x, y, 50, canvas.width/2, canvas.height/2, canvas.width*0.7);
-      grad.addColorStop(0, 'rgba(56, 189, 248, 0.06)');
-      grad.addColorStop(0.5, 'rgba(16, 185, 129, 0.03)');
-      grad.addColorStop(1, 'rgba(3, 7, 18, 0)');
-      ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
-      requestAnimationFrame(draw);
-    }
-    draw();
-
-    /* --- 2. 1/fコアアニメーション --- */
-    const coreCanvas = document.getElementById('corePulse');
-    const coreCtx = coreCanvas.getContext('2d');
-    function drawCore() {
-      const val = (Math.sin(Date.now() * 0.004) + 1) / 2;
-      coreCtx.clearRect(0,0,24,24);
-      coreCtx.beginPath();
-      coreCtx.arc(12, 12, 5 + val * 3, 0, Math.PI * 2);
-      coreCtx.fillStyle = '#38bdf8'; coreCtx.fill();
-      requestAnimationFrame(drawCore);
-    }
-    drawCore();
-
-    /* --- 3. ターミナル自動ログ処理 --- */
-    const logs = [
-      "Valuation Agent: 決算書の減価償却費・営業利益を自動調整完了",
-      "Matching Agent: 条件一致バイヤー12社への非名指し概要書（Teaser）送信完了",
-      "DD Agent: 登記簿・不動産抵当権等の法的リスクを検知なし",
-      "Contract Agent: M&A事業譲渡契約書ドラフト生成完了（人間最終承認待ち）"
-    ];
-    const logBox = document.getElementById('terminalLog');
-    function addLog() {
-      const time = new Date().toTimeString().split(' ')[0];
-      const msg = logs[Math.floor(Math.random() * logs.length)];
-      const div = document.createElement('div');
-      div.innerHTML = `<span style="color:var(--text-muted)">[${time}]</span> ${msg}`;
-      logBox.prepend(div);
-      if (logBox.children.length > 7) logBox.removeChild(logBox.lastChild);
-    }
-    setInterval(addLog, 3000); addLog();
-
-    /* --- 4. トレンドチャート描画 --- */
-    const chart = document.getElementById('trendChart');
-    const cCtx = chart.getContext('2d');
-    chart.width = chart.clientWidth; chart.height = 120;
-    function drawChart() {
-      cCtx.clearRect(0,0,chart.width,chart.height);
-      cCtx.beginPath(); cCtx.strokeStyle = '#10b981'; cCtx.lineWidth = 2;
-      const pts = [20, 30, 25, 45, 40, 60, 55, 80, 75, 95];
-      for(let i=0; i<pts.length; i++) {
-        let x = (i / (pts.length - 1)) * chart.width;
-        let y = chart.height - (pts[i] / 100) * chart.height;
-        if(i===0) cCtx.moveTo(x,y); else cCtx.lineTo(x,y);
+    // 簡単出品アクション
+    function quickSell() {
+      const name = prompt("売却したい会社・事業の名称を入力してください：", "例：〇〇Webメディア事業");
+      if(name) {
+        alert(`「${name}」のAI自動査定を開始しました。\n10秒で市場価値を算出し、全国の買い手へ自動打診します。`);
       }
-      cCtx.stroke();
-    }
-    drawChart();
-
-    /* --- 5. 人間最終承認アクション --- */
-    function executePayout() {
-      alert("【人間承認完了】Stripe Connect APIおよび銀行決済ネットワークが起動しました。指定口座へ ¥15,250,000 の着金処理を実行します。");
     }
 
-    /* --- 6. 法的モーダル表示ロジック --- */
-    const legalData = {
-      tokusho: {
-        title: "特定商取引法に基づく表記",
-        body: `<b>事業者名:</b> M&A-SWARM PROTOCOL 株式会社<br>
-               <b>代表責任者:</b> 代表取締役 CEO<br>
-               <b>所在地:</b> 東京都港区六本木 1-1-1<br>
-               <b>お問い合わせ:</b> support@ma-swarm.ai<br>
-               <b>販売価格:</b> 各アセット・ライセンス詳細ページに記載の通り<br>
-               <b>商品代金以外の必要料金:</b> 銀行振込手数料、決済手数料<br>
-               <b>引き渡し時期:</b> 承認手続きおよび決済完了後、即時（システム機能解放・権利移転）<br>
-               <b>お支払い方法:</b> クレジットカード（Stripe）、銀行振込、オンチェーン清算<br>
-               <b>返品・キャンセルについて:</b> デジタルコンテンツおよび権利移転の性質上、決済完了後の返金は原則承っておりません。`
-      },
-      terms: {
-        title: "利用規約",
-        body: "本サービスは、AIエージェントによる企業評価およびマッチング支援ツールです。最終的な契約締結および権利移転は、利用者の自己責任における最終承認（人間の意思決定）に基づいて実行されます。"
-      },
-      privacy: {
-        title: "プライバシーポリシー",
-        body: "当社は、取得した個人情報および企業財務データを暗号化処理し、M&Aマッチングおよび契約作成の目的以外での第三者提供を行いません。"
+    // 簡単購入申請アクション
+    function quickBuy(title, price) {
+      if(confirm(`【${title}】\n価格：${price}\n\nこの案件の秘密保持誓約（NDA）に同意し、詳細資料の確認および買収打診を進めますか？`)) {
+        alert("申請が完了しました。AIエージェントが売り手とのマッチング・契約手続きを開始します。");
       }
-    };
-
-    function openModal(key) {
-      document.getElementById('modalTitle').innerText = legalData[key].title;
-      document.getElementById('modalBody').innerHTML = legalData[key].body;
-      document.getElementById('legalModal').style.display = 'flex';
-    }
-    function closeModal() {
-      document.getElementById('legalModal').style.display = 'none';
     }
   </script>
 </body>
