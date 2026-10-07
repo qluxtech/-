@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>M&A-SWARM | 日本一簡単な即時売買マーケットプレイス</title>
+  <title>M&A-SWARM WORLD | 世界一の自律型アセットプラットフォーム</title>
   <style>
     :root {
-      --bg-core: #090d16;
-      --panel-bg: rgba(20, 29, 47, 0.9);
+      --bg-core: #030712;
+      --panel-bg: rgba(15, 23, 42, 0.85);
       --panel-border: rgba(255, 255, 255, 0.12);
-      --text-main: #ffffff;
+      --panel-hover: rgba(56, 189, 248, 0.25);
+      --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --accent-cyan: #38bdf8;
-      --accent-green: #10b981;
-      --accent-orange: #f97316;
-      --font-mono: "JetBrains Mono", monospace;
+      --accent-emerald: #10b981;
+      --accent-gold: #fbbf24;
+      --accent-purple: #c084fc;
+      --font-mono: "JetBrains Mono", Consolas, monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
@@ -25,314 +27,291 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 12px;
-      gap: 12px;
-      max-width: 800px;
-      margin: 0 auto;
+      padding: 10px;
+      gap: 10px;
     }
 
-    /* ヘッダー */
+    /* 背景1/fゆらぎキャンバス */
+    #ambientBg {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none;
+    }
+
+    .app-wrapper {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; gap: 10px;
+      max-width: 1400px; margin: 0 auto; width: 100%; flex-grow: 1;
+    }
+
+    /* 最上部：グローバルナビ */
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--panel-border);
+      background: var(--panel-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--panel-border); border-radius: 10px;
+      padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
     }
 
-    .brand {
-      font-size: 1.1rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, #fff, var(--accent-cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .logo { font-size: 1rem; font-weight: 900; letter-spacing: 0.05em; background: linear-gradient(135deg, #fff, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .status-tag { font-size: 0.7rem; background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 700; }
+
+    /* 1. 対話型AIエージェントバー（ワンタップ査定・出品） */
+    .ai-assistant-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(168, 85, 247, 0.05));
+      border: 1px solid var(--accent-cyan); border-radius: 10px; padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .ai-prompt { font-size: 0.8rem; color: var(--text-main); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .ai-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 800; font-size: 0.78rem; cursor: pointer; white-space: nowrap; }
+
+    /* 2. インタラクティブ・カテゴリ＆エリア操作 */
+    .filter-group { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+    .filter-chip { background: var(--panel-bg); border: 1px solid var(--panel-border); color: var(--text-sub); font-size: 0.72rem; padding: 6px 12px; border-radius: 6px; white-space: nowrap; cursor: pointer; }
+    .filter-chip.active { background: var(--accent-cyan); color: #000; font-weight: 800; border-color: var(--accent-cyan); }
+
+    /* 3. メインコンテンツ：グリッド構成（隙間ゼロ設計） */
+    .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; flex-grow: 1; }
+    @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--panel-bg); backdrop-filter: blur(12px);
+      border: 1px solid var(--panel-border); border-radius: 10px;
+      padding: 12px; display: flex; flex-direction: column; gap: 10px;
     }
 
-    .user-badge {
-      font-size: 0.75rem;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--accent-green);
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      font-weight: 700;
+    .panel-title { font-size: 0.78rem; font-weight: 800; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
+
+    /* 案件リスト（高密度・高情報量） */
+    .deal-cards { display: flex; flex-direction: column; gap: 8px; max-height: 360px; overflow-y: auto; }
+    .deal-card {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--panel-border);
+      border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;
+      transition: all 0.2s;
+    }
+    .deal-card:hover { border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.04); }
+
+    .deal-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem; }
+    .tag-area { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+    .tag-score { color: var(--accent-emerald); font-family: var(--font-mono); font-weight: 700; }
+
+    .deal-name { font-size: 0.88rem; font-weight: 800; color: #fff; }
+    .deal-stats { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
+    .price-val { font-size: 1.1rem; font-weight: 900; color: var(--accent-gold); }
+
+    /* アクションボタン群 */
+    .card-actions { display: flex; gap: 6px; }
+    .btn-action { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--panel-border); color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+    .btn-action.primary { background: var(--accent-cyan); color: #000; border: none; }
+
+    /* サイドパネル：リアルタイム分析 & ターミナル */
+    .terminal {
+      background: #010306; border: 1px solid var(--panel-border); border-radius: 6px;
+      padding: 8px; font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent-cyan);
+      height: 160px; overflow-y: hidden; display: flex; flex-direction: column; gap: 4px;
     }
 
-    /* メインアクション：売る / 買う 超巨大2大ボタン */
-    .hero-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 8px 0;
-    }
+    .chart-box { height: 120px; width: 100%; background: rgba(0,0,0,0.2); border-radius: 6px; border: 1px solid var(--panel-border); }
 
-    .action-card {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(0,0,0,0));
-      border: 1px solid var(--accent-cyan);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.1s, background 0.2s;
+    /* フッター出金・決済指示 */
+    .payout-bar {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(0,0,0,0));
+      border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 12px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
     }
-    .action-card:active { transform: scale(0.97); }
+    .payout-btn { background: linear-gradient(135deg, var(--accent-emerald), #059669); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 800; font-size: 0.82rem; cursor: pointer; }
 
-    .action-card.sell {
-      background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(0,0,0,0));
-      border-color: var(--accent-orange);
-    }
-
-    .action-title {
-      font-size: 1rem;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-    .action-sub {
-      font-size: 0.7rem;
-      color: var(--text-sub);
-    }
-
-    /* 超爆速フィルタータグ */
-    .filter-scroll {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      white-space: nowrap;
-    }
-
-    .tag-btn {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      color: var(--text-sub);
-      font-size: 0.75rem;
-      padding: 6px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    .tag-btn.active {
-      background: var(--accent-cyan);
-      color: #000;
-      font-weight: 800;
-      border-color: var(--accent-cyan);
-    }
-
-    /* 案件カードリスト (メルカリ風・超高見栄え) */
-    .market-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .item-card {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .item-badge {
-      font-size: 0.65rem;
-      background: rgba(255,255,255,0.08);
-      padding: 2px 8px;
-      border-radius: 4px;
-      color: var(--accent-cyan);
-    }
-
-    .item-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .item-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-top: 4px;
-      border-top: 1px dashed var(--panel-border);
-      padding-top: 8px;
-    }
-
-    .item-price {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: var(--accent-green);
-    }
-
-    .buy-btn {
-      background: var(--accent-cyan);
-      color: #000;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    /* 振込指示・確定報酬エリア */
-    .payout-card {
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-      margin-top: auto;
-    }
-
-    .payout-btn {
-      width: 100%;
-      background: linear-gradient(135deg, var(--accent-green), #059669);
-      color: #fff;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 8px;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-
-    /* フッター法的表記 */
-    footer {
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--text-sub);
-      padding: 10px 0;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .footer-link {
-      color: var(--text-sub);
-      text-decoration: none;
-      cursor: pointer;
-    }
+    footer { text-align: center; font-size: 0.68rem; color: var(--text-sub); padding: 6px 0; display: flex; justify-content: center; gap: 12px; }
   </style>
 </head>
 <body>
 
-  <!-- トップブランド -->
-  <header>
-    <div class="brand">M&A-SWARM EXPRESS</div>
-    <div class="user-badge">● 即時AI査定 & 決済対応</div>
-  </header>
+  <canvas id="ambientBg"></canvas>
 
-  <!-- ワンタップで始まる「売る・買う」超簡単アクション -->
-  <div class="hero-actions">
-    <div class="action-card sell" onclick="quickSell()">
-      <div class="action-title" style="color:var(--accent-orange)">🚀 会社・事業を売る</div>
-      <div class="action-sub">AIが10秒で自動査定＆即出品</div>
-    </div>
-    <div class="action-card" onclick="document.getElementById('market').scrollIntoView({behavior:'smooth'})">
-      <div class="action-title" style="color:var(--accent-cyan)">🛒 買いたい事業を探す</div>
-      <div class="action-sub">全国1,420件の厳選アセット</div>
-    </div>
-  </div>
-
-  <!-- 爆速ワンタップカテゴリー検索 -->
-  <div class="filter-scroll">
-    <button class="tag-btn active">すべて (1,420)</button>
-    <button class="tag-btn">IT・Web・SaaS</button>
-    <button class="tag-btn">美容・クリニック</button>
-    <button class="tag-btn">飲食店・居酒屋</button>
-    <button class="tag-btn">建設・不動産</button>
-  </div>
-
-  <!-- 簡単買収マーケットプレイス -->
-  <div class="market-list" id="market">
+  <div class="app-wrapper">
     
-    <div class="item-card">
-      <div class="item-header">
-        <span class="item-badge">東京都 • IT・SaaS</span>
-        <span style="font-size:0.75rem; color:var(--text-sub);">AI自動DD完了</span>
-      </div>
-      <div class="item-title">AI特化型ライティングAPIツール（月利 120万円）</div>
-      <div class="item-footer">
+    <!-- ヘッダー -->
+    <header>
+      <div class="logo">M&A-SWARM ULTRA</div>
+      <div class="status-tag">● 日本全国 47都道府県 ノード接続中</div>
+    </header>
+
+    <!-- 1. AI対話アシスタントバー -->
+    <div class="ai-assistant-card">
+      <div class="ai-prompt">
+        <span style="font-size:1.1rem;">🤖</span>
         <div>
-          <div style="font-size:0.65rem; color:var(--text-sub);">希望売却価格</div>
-          <div class="item-price">¥ 1,800 万円</div>
+          <div>「自社をいくらで売れるか？」AIが10秒で診断します</div>
+          <div style="font-size:0.68rem; color:var(--text-sub); font-weight:400;">決算書不要・完全匿名で概算査定を発行</div>
         </div>
-        <button class="buy-btn" onclick="quickBuy('AI特化型ライティングAPIツール', '1,800万円')">1タップで詳細・購入申請</button>
       </div>
+      <button class="ai-btn" onclick="startAiDiagnosis()">AI対話査定を始める</button>
     </div>
 
-    <div class="item-card">
-      <div class="item-header">
-        <span class="item-badge">大阪府 • 医療・美容</span>
-        <span style="font-size:0.75rem; color:var(--text-sub);">即時引き継ぎ可能</span>
-      </div>
-      <div class="item-title">心斎橋駅徒歩2分 美容皮膚科クリニック (完全自動予約導入済み)</div>
-      <div class="item-footer">
-        <div>
-          <div style="font-size:0.65rem; color:var(--text-sub);">希望売却価格</div>
-          <div class="item-price">¥ 2,500 万円</div>
-        </div>
-        <button class="buy-btn" onclick="quickBuy('心斎橋 美容皮膚科クリニック', '2,500万円')">1タップで詳細・購入申請</button>
-      </div>
+    <!-- 2. インタラクティブ操作タグ -->
+    <div class="filter-group">
+      <button class="filter-chip active">全国すべての案件 (1,420)</button>
+      <button class="filter-chip">IT・Web・SaaS (512)</button>
+      <button class="filter-chip">医療・美容クリニック (240)</button>
+      <button class="filter-chip">建設・不動産 (180)</button>
+      <button class="filter-chip">飲食店・レジャー (210)</button>
     </div>
 
-    <div class="item-card">
-      <div class="item-header">
-        <span class="item-badge">愛知県 • 建設・ゼネコン</span>
-        <span style="font-size:0.75rem; color:var(--text-sub);">黒字経営</span>
-      </div>
-      <div class="item-title">大手ハウスメーカー一次請け 電気設備工事会社（年商 1.8億円）</div>
-      <div class="item-footer">
-        <div>
-          <div style="font-size:0.65rem; color:var(--text-sub);">希望売却価格</div>
-          <div class="item-price">¥ 4,200 万円</div>
+    <!-- 3. メインコンテンツ（高密度） -->
+    <div class="content-grid">
+      
+      <!-- 左：最新売買アセット一覧 -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>AI精査済みマーケットプレイス</span>
+          <span style="color:var(--accent-cyan); font-size:0.68rem;">ZKP暗号化保護中</span>
         </div>
-        <button class="buy-btn" onclick="quickBuy('電気設備工事会社', '4,200万円')">1タップで詳細・購入申請</button>
+
+        <div class="deal-cards">
+          
+          <div class="deal-card">
+            <div class="deal-meta">
+              <span class="tag-area">東京都 • IT/SaaS</span>
+              <span class="tag-score">AI評価スコア: 98.4 / 100</span>
+            </div>
+            <div class="deal-name">AIライティングWebツール（月利 120万円 / 完全自動化）</div>
+            <div class="deal-stats">
+              <div>
+                <div style="font-size:0.62rem; color:var(--text-sub);">希望買収価格</div>
+                <div class="price-val">¥ 1,800 万円</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-action" onclick="alert('AI分析DDレポートを読み込みました。')">DDレポート</button>
+                <button class="btn-action primary" onclick="alert('秘密保持誓約（NDA）を締結し買収オファーを送信しました。')">1タップ即時オファー</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="deal-card">
+            <div class="deal-meta">
+              <span class="tag-area">大阪府 • 医療・美容</span>
+              <span class="tag-score">AI評価スコア: 94.1 / 100</span>
+            </div>
+            <div class="deal-name">心斎橋 美容皮膚科クリニック（Web自動予約・カルテ連動）</div>
+            <div class="deal-stats">
+              <div>
+                <div style="font-size:0.62rem; color:var(--text-sub);">希望買収価格</div>
+                <div class="price-val">¥ 2,500 万円</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-action" onclick="alert('AI分析DDレポートを読み込みました。')">DDレポート</button>
+                <button class="btn-action primary" onclick="alert('秘密保持誓約（NDA）を締結し買収オファーを送信しました。')">1タップ即時オファー</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="deal-card">
+            <div class="deal-meta">
+              <span class="tag-area">愛知県 • 建設工事</span>
+              <span class="tag-score">AI評価スコア: 91.8 / 100</span>
+            </div>
+            <div class="deal-name">大手ハウスメーカー一次請け 電気設備工事会社（年商 1.8億円）</div>
+            <div class="deal-stats">
+              <div>
+                <div style="font-size:0.62rem; color:var(--text-sub);">希望買収価格</div>
+                <div class="price-val">¥ 4,200 万円</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn-action" onclick="alert('AI分析DDレポートを読み込みました。')">DDレポート</button>
+                <button class="btn-action primary" onclick="alert('秘密保持誓約（NDA）を締結し買収オファーを送信しました。')">1タップ即時オファー</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
+
+      <!-- 右：リアルタイム取引トレンド ＆ AI自律ログ -->
+      <div class="panel">
+        <div class="panel-title">全国M&A取引相場チャート</div>
+        <canvas id="chartCanvas" class="chart-box"></canvas>
+
+        <div class="panel-title" style="margin-top:4px;">SWARM AGENT REALTIME LOG</div>
+        <div class="terminal" id="terminalLog"></div>
+      </div>
+
     </div>
+
+    <!-- 4. フッター送金指示バー -->
+    <div class="payout-bar">
+      <div>
+        <div style="font-size:0.68rem; color:var(--text-sub);">成約完了・確定成功報酬（即時受取可能）</div>
+        <div style="font-size:1.3rem; font-weight:900; color:var(--accent-emerald);">¥ 12,500,000</div>
+      </div>
+      <button class="payout-btn" onclick="alert('指定口座への送金手続きを即時完了しました。')">指定金融機関口座へ送金実行</button>
+    </div>
+
+    <!-- フッター特定商取引法表記等 -->
+    <footer>
+      <span onclick="alert('特定商取引法表記：M&A-SWARM PROTOCOL 株式会社 / 所在地: 東京都港区六本木 / 決済代行: Stripe')">特定商取引法に基づく表記</span> | 
+      <span onclick="alert('利用規約：本ツールはAI自動契約アシスト機構です。')">利用規約</span> | 
+      <span onclick="alert('プライバシーポリシー：データは暗号化保護されます。')">プライバシーポリシー</span>
+    </footer>
 
   </div>
-
-  <!-- 確定報酬・自動出金カード（管理者・ユーザー共有） -->
-  <div class="payout-card">
-    <div style="font-size:0.75rem; color:var(--text-sub)">確定売上・成功報酬のお振込準備完了額</div>
-    <div style="font-size:1.6rem; font-weight:900; color:var(--accent-green); margin:4px 0;">¥ 12,500,000</div>
-    <button class="payout-btn" onclick="alert('指定の口座（Stripe / 登録銀行）へ即時出金リクエストを送信しました。')">ワンタップで口座に送金（即時実行）</button>
-  </div>
-
-  <!-- 特定商取引法等の法的リンク完備 -->
-  <footer>
-    <span class="footer-link" onclick="alert('特定商取引法に基づく表記：M&A-SWARM 株式会社 / 東京都港区 / 決済代行：Stripe Connect')">特定商取引法に基づく表記</span>
-    <span>|</span>
-    <span class="footer-link" onclick="alert('利用規約：本サービスは自律型M&Aマッチングプラットフォームです。売買の最終確定は当事者の承認に基づきます。')">利用規約</span>
-    <span>|</span>
-    <span class="footer-link" onclick="alert('プライバシーポリシー：個人情報および企業機密は暗号化通信により保護されます。')">プライバシーポリシー</span>
-  </footer>
 
   <script>
-    // 簡単出品アクション
-    function quickSell() {
-      const name = prompt("売却したい会社・事業の名称を入力してください：", "例：〇〇Webメディア事業");
-      if(name) {
-        alert(`「${name}」のAI自動査定を開始しました。\n10秒で市場価値を算出し、全国の買い手へ自動打診します。`);
+    /* 1/f背景キャンバス */
+    const canvas = document.getElementById('ambientBg');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    let t = 0;
+    function drawBg() {
+      t += 0.002;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const grad = ctx.createRadialGradient(canvas.width*0.5, canvas.height*0.3, 10, canvas.width*0.5, canvas.height*0.5, canvas.width*0.8);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.08)');
+      grad.addColorStop(1, 'rgba(3, 7, 18, 0)');
+      ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+      requestAnimationFrame(drawBg);
+    }
+    drawBg();
+
+    /* AI対話査定 */
+    function startAiDiagnosis() {
+      const type = prompt("査定したい事業の業種を入力してください（例: IT、飲食店など）：", "IT・Web事業");
+      if(type) {
+        alert(`「${type}」の財務データをAIエージェントが解析中...\n想定買収価格帯: 1,500万円 〜 2,200万円\nワンタップで市場へ公開できます。`);
       }
     }
 
-    // 簡単購入申請アクション
-    function quickBuy(title, price) {
-      if(confirm(`【${title}】\n価格：${price}\n\nこの案件の秘密保持誓約（NDA）に同意し、詳細資料の確認および買収打診を進めますか？`)) {
-        alert("申請が完了しました。AIエージェントが売り手とのマッチング・契約手続きを開始します。");
-      }
+    /* リアルタイムログ */
+    const logBox = document.getElementById('terminalLog');
+    const msgs = [
+      "関東ノード: IT/SaaSアセットの自動デューデリジェンス完了",
+      "ZKP証明: 財務真実性の暗号的署名を完了",
+      "関西ノード: 買手ファンドからオファーを受信 (合致度 96%)"
+    ];
+    function addLog() {
+      const time = new Date().toTimeString().split(' ')[0];
+      const msg = msgs[Math.floor(Math.random() * msgs.length)];
+      const div = document.createElement('div');
+      div.innerHTML = `<span style="color:var(--text-sub)">[${time}]</span> ${msg}`;
+      logBox.prepend(div);
+      if (logBox.children.length > 6) logBox.removeChild(logBox.lastChild);
     }
+    setInterval(addLog, 2500); addLog();
+
+    /* トレンドチャート描画 */
+    const chart = document.getElementById('chartCanvas');
+    const cCtx = chart.getContext('2d');
+    chart.width = chart.clientWidth; chart.height = 120;
+    function drawChart() {
+      cCtx.clearRect(0,0,chart.width,chart.height);
+      cCtx.beginPath();
+      cCtx.strokeStyle = '#38bdf8'; cCtx.lineWidth = 2;
+      for(let i=0; i<10; i++) {
+        let x = (i / 9) * chart.width;
+        let y = chart.height - (Math.sin(i + Date.now()*0.002) * 20 + 50);
+        if(i===0) cCtx.moveTo(x,y); else cCtx.lineTo(x,y);
+      }
+      cCtx.stroke();
+      requestAnimationFrame(drawChart);
+    }
+    drawChart();
   </script>
 </body>
 </html>
