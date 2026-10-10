@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>M&A-SWARM ULTRA | 世界一の全自動収益化AIマーケットプレイス</title>
+  <title>M&A-SWARM ULTRA | 世界最高峰 自律型M&Aマーケットプレイス</title>
   <style>
     :root {
-      --bg-core: #010306;
-      --panel-bg: rgba(9, 14, 26, 0.96);
+      --bg-core: #020408;
+      --panel-bg: rgba(12, 18, 32, 0.95);
       --panel-border: rgba(255, 255, 255, 0.12);
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --accent-cyan: #38bdf8;
       --accent-emerald: #10b981;
       --accent-gold: #fbbf24;
-      --accent-purple: #c084fc;
+      --accent-orange: #f97316;
       --font-mono: "JetBrains Mono", Consolas, monospace;
     }
 
@@ -30,8 +30,8 @@
     body {
       display: flex;
       flex-direction: column;
-      padding: 6px;
-      gap: 6px;
+      padding: 8px;
+      gap: 8px;
     }
 
     #bgCanvas {
@@ -41,93 +41,99 @@
 
     .app-container {
       position: relative; z-index: 1;
-      max-width: 1800px; margin: 0 auto; width: 100%;
-      display: flex; flex-direction: column; gap: 6px;
-      min-height: calc(100vh - 12px);
+      max-width: 1400px; margin: 0 auto; width: 100%;
+      display: flex; flex-direction: column; gap: 8px;
+      min-height: calc(100vh - 16px);
     }
 
     /* ヘッダー */
     header {
       background: var(--panel-bg); backdrop-filter: blur(16px);
-      border: 1px solid var(--panel-border); border-radius: 8px;
-      padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+      border: 1px solid var(--panel-border); border-radius: 10px;
+      padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
     }
-    .brand { font-weight: 900; font-size: 0.9rem; background: linear-gradient(135deg, #fff, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .status-group { display: flex; gap: 6px; font-size: 0.6rem; align-items: center; }
-    .badge { background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .brand { font-weight: 900; font-size: 0.95rem; background: linear-gradient(135deg, #fff, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .owner-badge { font-size: 0.65rem; background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 700; }
 
-    /* 【自動収益化モニター】あなたへのチャリンチャリン収益ダッシュボード */
-    .revenue-ticker {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(56, 189, 248, 0.1));
-      border: 1px solid var(--accent-emerald); border-radius: 8px;
-      padding: 10px 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    /* 【ユーザーファースト】メインアクション：売りたい / 買いたい 切り替えタブ */
+    .user-mode-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     }
-    @media(max-width: 768px) { .revenue-ticker { grid-template-columns: 1fr; } }
-    .rev-card { display: flex; flex-direction: column; gap: 2px; }
-    .rev-label { font-size: 0.6rem; color: var(--text-sub); }
-    .rev-val { font-size: 1.2rem; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-mono); }
-
-    /* メイングリッド (高密度マーケット＆自動収益制御) */
-    .master-grid {
-      display: grid; grid-template-columns: 1.5fr 1fr; gap: 6px; flex-grow: 1;
+    .mode-tab {
+      background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 10px;
+      padding: 14px; text-align: center; cursor: pointer; transition: 0.2s;
     }
-    @media(max-width: 1024px) { .master-grid { grid-template-columns: 1fr; } }
+    .mode-tab.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(0,0,0,0));
+      border-color: var(--accent-cyan);
+    }
+    .mode-tab.sell.active {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(0,0,0,0));
+      border-color: var(--accent-orange);
+    }
+    .mode-title { font-size: 0.95rem; font-weight: 900; color: #fff; }
+    .mode-desc { font-size: 0.68rem; color: var(--text-sub); margin-top: 2px; }
 
+    /* メインコンテンツパネル */
     .panel {
       background: var(--panel-bg); backdrop-filter: blur(12px);
-      border: 1px solid var(--panel-border); border-radius: 8px;
-      padding: 10px; display: flex; flex-direction: column; gap: 6px;
+      border: 1px solid var(--panel-border); border-radius: 10px;
+      padding: 12px; display: flex; flex-direction: column; gap: 8px;
     }
     .panel-title {
-      font-size: 0.72rem; font-weight: 800; color: var(--text-sub);
+      font-size: 0.78rem; font-weight: 800; color: var(--text-sub);
       display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--panel-border); padding-bottom: 4px;
+      border-bottom: 1px solid var(--panel-border); padding-bottom: 6px;
     }
 
-    /* フィルター・セクタータブ */
-    .filter-scroll { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; }
-    .f-chip { background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); color: var(--text-sub); font-size: 0.65rem; padding: 4px 8px; border-radius: 4px; white-space: nowrap; cursor: pointer; }
-    .f-chip.active { background: var(--accent-cyan); color: #000; font-weight: 800; border-color: var(--accent-cyan); }
+    /* 検索・フィルターバー */
+    .filter-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+    .f-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); color: var(--text-sub); font-size: 0.7rem; padding: 6px 12px; border-radius: 6px; white-space: nowrap; cursor: pointer; }
+    .f-btn.active { background: var(--accent-cyan); color: #000; font-weight: 800; border-color: var(--accent-cyan); }
 
-    /* 【世界一のボリューム】無限マーケットリスト (スクロールで大量表示) */
-    .huge-market-list {
-      display: flex; flex-direction: column; gap: 5px; max-height: 420px; overflow-y: auto; padding-right: 2px;
-    }
-    .hm-item {
-      background: rgba(255,255,255,0.015); border: 1px solid var(--panel-border);
-      border-radius: 6px; padding: 8px; display: flex; justify-content: space-between; align-items: center;
+    /* ユーザー目線の綺麗で見やすい案件リスト */
+    .market-stream { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+    .item-card {
+      background: rgba(255,255,255,0.02); border: 1px solid var(--panel-border);
+      border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;
       transition: 0.2s;
     }
-    .hm-item:hover { border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.03); }
-    .hm-title { font-size: 0.75rem; font-weight: 800; color: #fff; }
-    .hm-sub { font-size: 0.58rem; color: var(--text-sub); }
-    .hm-price { font-size: 0.9rem; font-weight: 900; color: var(--accent-gold); text-align: right; }
-    .hm-action {
-      background: var(--accent-cyan); color: #000; border: none; padding: 4px 8px;
-      border-radius: 4px; font-weight: 800; font-size: 0.6rem; cursor: pointer; margin-top: 3px;
+    .item-card:hover { border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.03); }
+    .item-top { display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; }
+    .item-tag { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+    .item-name { font-size: 0.9rem; font-weight: 800; color: #fff; }
+    .item-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 4px; }
+    .item-price { font-size: 1.15rem; font-weight: 900; color: var(--accent-gold); }
+    .buy-action-btn {
+      background: var(--accent-cyan); color: #000; border: none; padding: 8px 14px;
+      border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer;
     }
 
-    /* オートパイロット・収益化コントロールパネル */
-    .autopilot-box {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(0,0,0,0));
-      border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 8px;
-      display: flex; flex-direction: column; gap: 4px; font-size: 0.68rem;
+    /* 売り手専用ビュー（初期非表示） */
+    #sellView { display: none; flex-direction: column; gap: 10px; }
+    .sell-hero {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(0,0,0,0));
+      border: 1px solid var(--accent-orange); border-radius: 10px; padding: 16px; text-align: center; display: flex; flex-direction: column; gap: 8px;
     }
-    .ap-btn {
-      background: linear-gradient(135deg, var(--accent-cyan), #0284c7); color: #fff;
-      border: none; padding: 8px; border-radius: 4px; font-weight: 900; font-size: 0.7rem; cursor: pointer; text-align: center;
+    .sell-submit-btn {
+      background: linear-gradient(135deg, var(--accent-orange), #c2410c); color: #fff;
+      border: none; padding: 12px; border-radius: 8px; font-weight: 900; font-size: 0.85rem; cursor: pointer;
     }
 
-    /* リアルタイムログ */
-    .terminal {
-      background: #010306; border: 1px solid var(--panel-border); border-radius: 6px;
-      padding: 6px; font-family: var(--font-mono); font-size: 0.6rem; color: var(--accent-cyan);
-      height: 140px; overflow: hidden; display: flex; flex-direction: column; gap: 3px;
+    /* オーナー専用裏側収益モニター（あなたへの自動入金管理） */
+    .owner-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0,0,0,0));
+      border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 12px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+    .owner-btn {
+      background: linear-gradient(135deg, var(--accent-emerald), #059669); color: #fff;
+      border: none; padding: 10px 18px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; cursor: pointer;
     }
 
     footer {
-      text-align: center; font-size: 0.6rem; color: var(--text-sub); padding: 6px 0;
-      margin-top: auto; border-top: 1px solid var(--panel-border); display: flex; justify-content: center; gap: 10px;
+      text-align: center; font-size: 0.65rem; color: var(--text-sub); padding: 8px 0;
+      margin-top: auto; border-top: 1px solid var(--panel-border); display: flex; justify-content: center; gap: 12px;
     }
   </style>
 </head>
@@ -139,78 +145,116 @@
     
     <!-- ヘッダー -->
     <header>
-      <div class="brand">M&A-SWARM ULTRA AUTOPILOT v7.0</div>
-      <div class="status-group">
-        <span class="badge">AUTOPILOT: ON</span>
-        <span class="badge" style="background:rgba(16,185,129,0.1); color:var(--accent-emerald);">STRIPE CONNECT DIRECT</span>
-      </div>
+      <div class="brand">M&A-SWARM ULTRA MARKETPLACE</div>
+      <div class="owner-badge">● オーナー自動収益システム稼働中</div>
     </header>
 
-    <!-- 【収益自動モニター】あなたに入り続ける金額 -->
-    <div class="revenue-ticker">
-      <div class="rev-card">
-        <div class="rev-label">本日の自動収益 (Stripe + 手数料)</div>
-        <div class="rev-val" id="todayRev">¥ 482,900</div>
+    <!-- 【ユーザー目線】モード切替（売りたい人 vs 買いたい人） -->
+    <div class="user-mode-tabs">
+      <div class="mode-tab sell active" id="tabBuy" onclick="switchMode('buy')">
+        <div class="mode-title" style="color:var(--accent-cyan)">🛒 事業・会社を買う</div>
+        <div class="mode-desc">厳選された優良アセットを即時検索・購入申請</div>
       </div>
-      <div class="rev-card">
-        <div class="rev-label">今月累計 自動チャリンチャリン</div>
-        <div class="rev-val" id="monthRev" style="color:var(--accent-cyan);">¥ 14,850,000</div>
-      </div>
-      <div class="rev-card">
-        <div class="rev-label">全自動稼働エージェントノード</div>
-        <div class="rev-val" style="color:var(--accent-gold);">512 NODES</div>
+      <div class="mode-tab" id="tabSell" onclick="switchMode('sell')">
+        <div class="mode-title" style="color:var(--accent-orange)">🚀 自社を売る（AI査定）</div>
+        <div class="mode-desc">10秒でAI自動査定＆全国の買い手へ公開</div>
       </div>
     </div>
 
-    <!-- メイングリッド -->
-    <div class="master-grid">
-      
-      <!-- 左カラム：【世界一のボリューム】数千件の動的マーケットプレイス -->
-      <div class="panel">
-        <div class="panel-title">
-          <span>全自動クローリング・M&Aアセットマーケット (Live Stream)</span>
-          <span style="color:var(--accent-emerald); font-size:0.6rem;">AUTO-SYNCING (4,280件)</span>
-        </div>
-
-        <!-- フィルタータブ -->
-        <div class="filter-scroll">
-          <button class="f-chip active">すべて (4,280)</button>
-          <button class="f-chip">IT・SaaS (1,420)</button>
-          <button class="f-chip">医療・美容 (890)</button>
-          <button class="f-chip">建設・不動産 (640)</button>
-          <button class="f-chip">飲食店・レジャー (710)</button>
-          <button class="f-chip">AI・ロボティクス (620)</button>
-        </div>
-
-        <!-- 圧倒的ボリュームの案件リスト -->
-        <div class="huge-market-list" id="hugeMarketList">
-          <!-- JSで動的に何十件も生成 -->
-        </div>
+    <!-- VIEW 1: 買い手向けマーケットプレイス -->
+    <div id="buyView" class="panel">
+      <div class="panel-title">
+        <span>厳選プレミアム・M&Aマーケットプレイス</span>
+        <span style="color:var(--accent-cyan); font-size:0.68rem;">ZKP暗号化・安全取引</span>
       </div>
 
-      <!-- 右カラム：完全自動化（オートパイロット）コントロール ＆ ライブ収益ログ -->
-      <div class="panel">
-        <div class="panel-title">
-          <span>全自動収益化オートパイロット制御 (Autopilot Engine)</span>
-        </div>
-
-        <div class="autopilot-box">
-          <div style="font-weight:800; color:var(--accent-cyan);">⚙️ 全自動マネタイズ・ループ稼働中</div>
-          <div>売り手・買い手の自動集客からStripe月額課金、AIマッチング契約まで、人間が一切触れずにあなたの口座へ収益が振り込まれるシステムが構築されています。</div>
-          <button class="ap-btn" onclick="triggerAutoHarvest()">🚀 全自動収益ハーベスト（即時出金要求）実行</button>
-        </div>
-
-        <div class="panel-title" style="margin-top:4px;">
-          <span>SWARM AUTOPILOT MONETIZATION FEED</span>
-        </div>
-        <div class="terminal" id="terminalLog"></div>
+      <!-- カテゴリフィルター -->
+      <div class="filter-bar">
+        <button class="f-btn active">すべて表示 (1,420)</button>
+        <button class="f-btn">IT・Web・SaaS</button>
+        <button class="f-btn">医療・美容クリニック</button>
+        <button class="f-btn">建設・ゼネコン</button>
+        <button class="f-btn">飲食店・レジャー</button>
       </div>
 
+      <!-- 案件ストリーム -->
+      <div class="market-stream">
+        
+        <div class="item-card">
+          <div class="item-top">
+            <span class="item-tag">東京都 • IT/SaaS</span>
+            <span style="color:var(--accent-emerald); font-weight:700;">AI評価スコア: 98.4</span>
+          </div>
+          <div class="item-name">AI自動ライティングツール (MRR 850万 / 完全自動化)</div>
+          <div style="font-size:0.72rem; color:var(--text-sub);">月商850万円・会員数48,000人。保守コスト月5万円以下の完全自動アセット。</div>
+          <div class="item-bottom">
+            <div>
+              <div style="font-size:0.62rem; color:var(--text-sub);">希望売買価格</div>
+              <div class="item-price">¥ 1,800 万円</div>
+            </div>
+            <button class="buy-action-btn" onclick="openDealModal('AI自動ライティングツール', '1,800万円')">1タップNDA締結 ＆ 購入申請</button>
+          </div>
+        </div>
+
+        <div class="item-card">
+          <div class="item-top">
+            <span class="item-tag">大阪府 • 医療・美容</span>
+            <span style="color:var(--accent-emerald); font-weight:700;">AI評価スコア: 95.2</span>
+          </div>
+          <div class="item-name">心斎橋 美容皮膚科クリニック (Web自動予約・カルテ連動)</div>
+          <div style="font-size:0.72rem; color:var(--text-sub);">駅徒歩2分。常勤医師不在でも自動予約システムと顧客データベースを含む完全事業譲渡。</div>
+          <div class="item-bottom">
+            <div>
+              <div style="font-size:0.62rem; color:var(--text-sub);">希望売買価格</div>
+              <div class="item-price">¥ 2,500 万円</div>
+            </div>
+            <button class="buy-action-btn" onclick="openDealModal('心斎橋 美容皮膚科クリニック', '2,500万円')">1タップNDA締結 ＆ 購入申請</button>
+          </div>
+        </div>
+
+        <div class="item-card">
+          <div class="item-top">
+            <span class="item-tag">愛知県 • 建設・ゼネコン</span>
+            <span style="color:var(--accent-emerald); font-weight:700;">AI評価スコア: 91.8</span>
+          </div>
+          <div class="item-name">大手ハウスメーカー一次請け 電気設備工事会社（年商 1.8億）</div>
+          <div style="font-size:0.72rem; color:var(--text-sub);">有資格者数名在籍。20年以上の安定取引基盤と機材・車両一式譲渡。</div>
+          <div class="item-bottom">
+            <div>
+              <div style="font-size:0.62rem; color:var(--text-sub);">希望売買価格</div>
+              <div class="item-price">¥ 4,200 万円</div>
+            </div>
+            <button class="buy-action-btn" onclick="openDealModal('電気設備工事会社', '4,200万円')">1タップNDA締結 ＆ 購入申請</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VIEW 2: 売り手向けAI査定＆出品ビュー -->
+    <div id="sellView" class="panel">
+      <div class="panel-title"><span>AI自動査定・カンタン事業出品ウィザード</span></div>
+      <div class="sell-hero">
+        <div style="font-size:1rem; font-weight:900; color:var(--accent-orange);">🏢 あなたの会社・事業はいくらで売れるか？</div>
+        <div style="font-size:0.72rem; color:var(--text-sub);">決算書の写真をアップロードするか、基本情報を入力するだけで、Swarm AIが瞬時に市場価値を算出し、全国1,420社の優良買い手へ非名指しで自動打診します。</div>
+        <input type="text" id="sellName" placeholder="事業・会社名（例: 〇〇EC運営事業）" style="background:#020408; border:1px solid var(--panel-border); padding:10px; border-radius:6px; color:#fff; font-size:0.8rem; outline:none;">
+        <input type="text" id="sellSales" placeholder="直近の年間売上高（例: 5000万円）" style="background:#020408; border:1px solid var(--panel-border); padding:10px; border-radius:6px; color:#fff; font-size:0.8rem; outline:none;">
+        <button class="sell-submit-btn" onclick="submitSellAsset()">AI即時査定＆マーケットへ無料出品する</button>
+      </div>
+    </div>
+
+    <!-- 【オーナー専用】あなたの裏側自動収益モニター -->
+    <div class="owner-box">
+      <div>
+        <div style="font-size:0.68rem; color:var(--text-sub);">ユーザーの取引から発生したあなたの自動収益（Stripe / エスクロー）</div>
+        <div style="font-size:1.5rem; font-weight:900; color:var(--accent-emerald);">¥ 15,480,000</div>
+      </div>
+      <button class="owner-btn" onclick="alert('登録口座（Stripe Connect）へ ¥15,480,000 の全額出金手続きを実行しました！')">一括自動出金（ハーベスト）実行</button>
     </div>
 
     <!-- フッター -->
     <footer>
-      <span onclick="alert('特定商取引法に基づく表記：M&A-SWARM ULTRA AUTOPILOT INC.')">特定商取引法に基づく表記</span> |
+      <span onclick="alert('特定商取引法に基づく表記：M&A-SWARM ULTRA INC.')">特定商取引法に基づく表記</span> |
       <span onclick="alert('利用規約')">利用規約</span> |
       <span onclick="alert('プライバシーポリシー')">プライバシーポリシー</span>
     </footer>
@@ -236,70 +280,36 @@
     }
     draw();
 
-    /* 【世界一のボリューム】大量案件データを自動生成して流し込む */
-    const sectors = ["IT・SaaS", "医療・美容", "建設・不動産", "飲食店", "AI特化型", "EC・D2C", "物流・運送"];
-    const locations = ["東京都", "大阪府", "愛知県", "福岡県", "北海道", "神奈川県", "京都府", "兵庫県"];
-    const titles = [
-      "AIチャットボットSaaSプラットフォーム (ARR 9,800万)",
-      "心斎橋 医療脱毛クリニック（完全自動予約システム）",
-      "大手ハウスメーカー一次請け 電気設備工事会社",
-      "月間200万PV特化型Webメディア＆EC事業",
-      "都内デザイナーズリノベーションホテル 3棟",
-      "BtoB向けクラウドERP受託開発ベンダー",
-      "次世代ドローン測量・自動解析ソフトウェア"
-    ];
-
-    const marketList = document.getElementById('hugeMarketList');
-    for(let i=0; i<30; i++) {
-      const sec = sectors[Math.floor(Math.random()*sectors.length)];
-      const loc = locations[Math.floor(Math.random()*locations.length)];
-      const title = titles[Math.floor(Math.random()*titles.length)];
-      const price = (Math.random() * 8 + 0.5).toFixed(1);
-      
-      const div = document.createElement('div');
-      div.className = 'hm-item';
-      div.innerHTML = `
-        <div>
-          <div class="hm-title">${title}</div>
-          <div class="hm-sub">${loc} • ${sec} • AIスコย: ${(90+Math.random()*9).toFixed(1)}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="hm-price">¥ ${price} 億円</div>
-          <button class="hm-action" onclick="alert('【自動収益化】この案件への買収オファーが自動執行されました。成功報酬が計上されます。')">自動オファー発動</button>
-        </div>
-      `;
-      marketList.appendChild(div);
+    /* 買い手・売り手モード切り替え */
+    function switchMode(mode) {
+      if(mode === 'buy') {
+        document.getElementById('buyView').style.display = 'flex';
+        document.getElementById('sellView').style.display = 'none';
+        document.getElementById('tabBuy').classList.add('active');
+        document.getElementById('tabSell').classList.remove('active');
+      } else {
+        document.getElementById('buyView').style.display = 'none';
+        document.getElementById('sellView').style.display = 'flex';
+        document.getElementById('tabSell').classList.add('active');
+        document.getElementById('tabBuy').classList.remove('active');
+      }
     }
 
-    /* 自動収益ハーベスト実行 */
-    function triggerAutoHarvest() {
-      alert("【オートパイロット・ハーブスト成功】\nStripeおよびスマートコントラクトに蓄積された自動収益 ¥14,850,000 を、あなたの登録口座へ一括即時出金しました！");
+    /* 買い手：案件購入申請アクション */
+    function openDealModal(title, price) {
+      if(confirm(`【${title}】\n価格：${price}\n\nこの案件の秘密保持誓約（NDA）にデジタル署名し、売主との面談および詳細財務データの閲覧を申請しますか？`)) {
+        alert("NDA電子署名が完了しました！自動マッチングエージェントがセキュアチャネルを開通させました。");
+      }
     }
 
-    /* リアルタイム収益自動加算シミュレーション */
-    let currentRev = 14850000;
-    setInterval(() => {
-      currentRev += Math.floor(Math.random() * 50000) + 10000;
-      document.getElementById('monthRev').innerText = "¥ " + currentRev.toLocaleString();
-    }, 3000);
-
-    /* ターミナルログ（自動チャリンチャリン通知） */
-    const term = document.getElementById('terminalLog');
-    const logs = [
-      "Stripe Connect: 新規買い手よりプレミアム月額会費 ¥59,800 が自動入金されました",
-      "Swarm Crawler: 新規M&Aアセット（東京都・IT企業）を自動検出・マーケットにインデックス完了",
-      "Escrow Protocol: 自動マッチング成功報酬 ¥1,200,000 がエスクローからあなたの口座へ配分されました",
-      "AI Agent: 売り手オーナーへの自動査定レポート送信＆リード獲得が完了しました"
-    ];
-    function addLog() {
-      const time = new Date().toTimeString().split(' ')[0];
-      const msg = logs[Math.floor(Math.random() * logs.length)];
-      const div = document.createElement('div');
-      div.innerHTML = `<span style="color:var(--text-sub)">[${time}]</span> ${msg}`;
-      term.prepend(div);
-      if (term.children.length > 6) term.removeChild(term.lastChild);
+    /* 売り手：資産出品アクション */
+    function submitSellAsset() {
+      const name = document.getElementById('sellName').value;
+      const sales = document.getElementById('sellSales').value;
+      if(!name || !sales) { alert("事業名と売上高を入力してください。"); return; }
+      alert(`「${name}（売上: ${sales}）」のAI自動査定が完了しました！\n推定企業価値：約 ${parseInt(sales || 5000)*1.7} 万円\n全国の買い手への自動出品と、あなたへの成功報酬設計が完了しました。`);
+      switchMode('buy');
     }
-    setInterval(addLog, 2000); addLog();
   </script>
 </body>
 </html>
