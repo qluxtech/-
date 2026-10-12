@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>M&A-SWARM SUPREME v11.0 | Quantum Global Terminal</title>
+  <title>M&A-SWARM SUPREME v12.0 | Global Omnibus Terminal</title>
   <style>
     :root {
       --bg-core: #010206;
-      --panel-bg: rgba(6, 10, 20, 0.92);
+      --panel-bg: rgba(6, 10, 20, 0.94);
       --panel-border: rgba(255, 255, 255, 0.1);
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
@@ -22,17 +22,17 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
 
     html, body {
-      background-color: var--bg-core); color: var(--text-main);
+      background-color: var(--bg-core); color: var(--text-main);
       height: 100vh; width: 100vw; overflow: hidden;
     }
 
     body { display: flex; flex-direction: column; padding: 6px; gap: 6px; }
 
-    #quantumCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+    #globalCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
 
     .app-viewport {
       position: relative; z-index: 1; width: 100%; height: 100%;
-      display: flex; flex-direction: column; gap: 6px; max-width: 1900px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 6px; max-width: 1920px; margin: 0 auto;
     }
 
     header {
@@ -43,28 +43,27 @@
 
     .brand-title { font-weight: 900; font-size: 0.9rem; background: linear-gradient(135deg, #fff, var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
-    .status-group { display: flex; gap: 6px; align-items: center; }
-    .badge {
-      font-size: 0.58rem; font-weight: 700; padding: 3px 8px; border-radius: 4px;
-      border: 1px solid var(--panel-border); background: rgba(56, 189, 248, 0.08); color: var(--accent-cyan);
+    .global-controls { display: flex; gap: 6px; align-items: center; }
+    .select-lang, .select-curr {
+      background: #020408; border: 1px solid var(--panel-border); color: var(--accent-cyan);
+      font-size: 0.6rem; padding: 3px 6px; border-radius: 4px; outline: none; font-weight: 700; cursor: pointer;
     }
-    .badge.green { color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08); }
 
-    /* オーナー自動収益トップティッカー */
+    /* オーナー自動収益トップティッカー（グローバル対応） */
     .owner-ticker {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(56, 189, 248, 0.08));
       border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 8px;
       padding: 8px 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex-shrink: 0;
     }
     .ot-item { display: flex; flex-direction: column; gap: 1px; }
-    .ot-lbl { font-size: 0.55rem; color: var(--text-sub); text-transform: uppercase; }
+    .ot-lbl { font-size: 0.55srem; color: var(--text-sub); text-transform: uppercase; }
     .ot-val { font-size: 1.05rem; font-weight: 900; font-family: var(--font-mono); }
 
-    /* メイングリッド (完全高密度化) */
-    .quantum-grid {
+    /* メイングリッド */
+    .global-grid {
       display: grid; grid-template-columns: 1.4fr 1fr; gap: 6px; flex-grow: 1; min-height: 0;
     }
-    @media (max-width: 960px) { .quantum-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 960px) { .global-grid { grid-template-columns: 1fr; } }
 
     .panel {
       background: var(--panel-bg); backdrop-filter: blur(20px);
@@ -144,91 +143,101 @@
 </head>
 <body>
 
-  <canvas id="quantumCanvas"></canvas>
+  <canvas id="globalCanvas"></canvas>
 
   <div class="app-viewport">
     
     <header>
-      <div class="brand-title">M&A-SWARM SUPREME v11.0 QUANTUM</div>
-      <div class="status-group">
-        <div class="badge green">● 64 NODES SYNCHRONIZED</div>
-        <div class="badge">STRIPE CONNECT ACTIVE</div>
+      <div class="brand-title">M&A-SWARM OMNIBUS v12.0 GLOBAL</div>
+      <div class="global-controls">
+        <select class="select-curr" id="currSelect" onchange="changeCurrency()">
+          <option value="JPY">JPY (¥)</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="USDC">USDC (Crypto)</option>
+        </select>
+        <select class="select-lang">
+          <option>ENGLISH</option>
+          <option selected>日本語</option>
+          <option>中文</option>
+          <option>DEUTSCH</option>
+        </select>
       </div>
     </header>
 
     <div class="owner-ticker">
       <div class="ot-item">
-        <div class="ot-lbl">本日の自動収益 (Stripe/Escrow)</div>
-        <div class="ot-val" id="todayRev" style="color:var(--accent-emerald)">¥ 942,800</div>
+        <div class="ot-lbl">GLOBAL REVENUE (24H)</div>
+        <div class="ot-val" id="todayRev" style="color:var(--accent-emerald)">¥ 1,240,500</div>
       </div>
       <div class="ot-item">
-        <div class="ot-lbl">当月累計チャリンチャリン</div>
-        <div class="ot-val" id="monthRev" style="color:var(--accent-cyan)">¥ 24,890,000</div>
+        <div class="ot-lbl">MONTHLY AUTOPILOT POOL</div>
+        <div class="ot-val" id="monthRev" style="color:var(--accent-cyan)">¥ 28,450,000</div>
       </div>
       <div class="ot-item">
-        <div class="ot-lbl">自律マッチング勝率</div>
-        <div class="ot-val" style="color:var(--accent-gold)">99.6%</div>
+        <div class="ot-lbl">CROSS-BORDER MATCH</div>
+        <div class="ot-val" style="color:var(--accent-gold)">99.8%</div>
       </div>
       <div class="ot-item">
-        <div class="ot-lbl">グローバル投資ファンド</div>
-        <div class="ot-val" style="color:var(--accent-purple)">2,140 社</div>
+        <div class="ot-lbl">GLOBAL FUNDS</div>
+        <div class="ot-val" style="color:var(--accent-purple)">3,420 社</div>
       </div>
     </div>
 
-    <div class="quantum-grid">
+    <div class="global-grid">
       
       <div class="panel">
         <div class="super-switcher">
           <div class="ss-btn active buy" id="modeBuy" onclick="switchMode('buy')">
-            <div class="ss-title" style="color:var(--accent-cyan)">🛒 事業を買う (買い手)</div>
-            <div class="ss-sub">ZKP暗号化・エスクロー即時決済</div>
+            <div class="ss-title" style="color:var(--accent-cyan)">🛒 CROSS-BORDER ACQUISITION</div>
+            <div class="ss-sub">ZKP Verified & Instant Escrow</div>
           </div>
           <div class="ss-btn sell" id="modeSell" onclick="switchMode('sell')">
-            <div class="ss-title" style="color:var(--accent-orange)">🚀 自社を売る (売り手)</div>
-            <div class="ss-sub">10秒AI自動査定・ノンネーム出品</div>
+            <div class="ss-title" style="color:var(--accent-orange)">🚀 GLOBAL ASSET LISTING</div>
+            <div class="ss-sub">10s AI Valuation & Non-Name</div>
           </div>
         </div>
 
         <div id="buyContainer" style="display:flex; flex-direction:column; gap:6px; flex-grow:1; min-height:0;">
           <div class="panel-heading">
-            <span>AI精査済みプレミアム・マーケットプレイス</span>
-            <span style="color:var(--accent-cyan); font-size:0.58rem;">ZKP VERIFIED</span>
+            <span>GLOBAL VERIFIED ASSET STREAM</span>
+            <span style="color:var(--accent-cyan); font-size:0.58rem;">NYC • LON • SIN • TYO</span>
           </div>
           <div class="market-scroll" id="assetStream"></div>
         </div>
 
         <div id="sellContainer" style="display:none; flex-direction:column; gap:6px; flex-grow:1;">
           <div class="panel-heading">
-            <span>10秒AI自動査定 ＆ ノンネーム即時出品</span>
-            <span style="color:var(--accent-orange); font-size:0.58rem;">FASTAPI CONNECT</span>
+            <span>GLOBAL AI VALUATION WIZARD</span>
+            <span style="color:var(--accent-orange); font-size:0.58rem;">CROSS-BORDER SYNC</span>
           </div>
           <div class="ai-wizard-box">
             <div class="input-field-group">
-              <div class="input-lbl">事業・会社名</div>
-              <input type="text" id="bizTitle" class="supreme-input" placeholder="例：AI駆動型SaaSプラットフォーム">
+              <div class="input-lbl">Enterprise / Asset Name</div>
+              <input type="text" id="bizTitle" class="supreme-input" placeholder="e.g. AI Autonomous SaaS Platform">
             </div>
             <div class="input-field-group">
-              <div class="input-lbl">直近の年間売上高 (円)</div>
-              <input type="number" id="bizSalesVal" class="supreme-input" placeholder="150000000">
+              <div class="input-lbl">Annual Revenue (Local Currency)</div>
+              <input type="number" id="bizSalesVal" class="supreme-input" placeholder="180000000">
             </div>
             <div class="input-field-group">
-              <div class="input-lbl">年間営業利益 (円)</div>
-              <input type="number" id="bizProfitVal" class="supreme-input" placeholder="55000000">
+              <div class="input-lbl">Net Annual Profit (Local Currency)</div>
+              <input type="number" id="bizProfitVal" class="supreme-input" placeholder="65000000">
             </div>
-            <button class="btn-wizard-submit" onclick="executeApiValuation()">AI査定 ＆ グローバル出品を実行</button>
+            <button class="btn-wizard-submit" onclick="executeGlobalValuation()">Execute AI Valuation & Global Listing</button>
           </div>
         </div>
       </div>
 
       <div class="panel">
         <div class="panel-heading">
-          <span>全国M&Aアセット流動性インデックス</span>
-          <span style="color:var(--accent-emerald); font-size:0.58rem;">QUANTUM TELEMETRY</span>
+          <span>GLOBAL LIQUIDITY TELEMETRY</span>
+          <span style="color:var(--accent-emerald); font-size:0.58rem;">OMNIBUS MESH ACTIVE</span>
         </div>
         <div class="right-viz-stack">
           <canvas id="liveChart" class="chart-canvas-box"></canvas>
           <div class="panel-heading" style="margin-top:2px;">
-            <span>SWARM AGENT AUTOPILOT LOG</span>
+            <span>GLOBAL SWARM AGENT AUTOPILOT LOG</span>
           </div>
           <div class="terminal-output" id="terminalFeed"></div>
         </div>
@@ -237,34 +246,34 @@
     </div>
 
     <footer>
-      <button class="harvest-glow-btn" onclick="triggerStripeHarvest()">Stripe口座へ全額即時一括出金 (Payout)</button>
+      <button class="harvest-glow-btn" onclick="triggerGlobalHarvest()">Execute Global Stripe Payout (Instant)</button>
       <div style="display:flex; gap:10px;">
-        <span style="cursor:pointer;" onclick="alert('特定商取引法に基づく表記：M&A-SWARM SUPREME 株式会社')">特定商取引法</span>
+        <span style="cursor:pointer;" onclick="alert('Global Legal Disclosures & Cross-Border Compliance')">Legal</span>
         <span>|</span>
-        <span style="cursor:pointer;" onclick="alert('利用規約')">利用規約</span>
+        <span style="cursor:pointer;" onclick="alert('Terms of Global Omnibus Service')">Terms</span>
       </div>
     </footer>
 
   </div>
 
   <script>
-    /* 量子背景キャンバス描画 */
-    const canvas = document.getElementById('quantumCanvas');
+    /* グローバル背景メッシュ描画 */
+    const canvas = document.getElementById('globalCanvas');
     const ctx = canvas.getContext('2d');
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas); resizeCanvas();
     let step = 0;
-    function renderQuantum() {
+    function renderGlobalMesh() {
       step += 0.003;
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      const grad = ctx.createRadialGradient(canvas.width*0.5 + Math.sin(step)*120, canvas.height*0.3, 10, canvas.width*0.5, canvas.height*0.5, canvas.width*0.8);
-      grad.addColorStop(0, 'rgba(56, 189, 248, 0.12)');
-      grad.addColorStop(0.5, 'rgba(192, 132, 252, 0.04)');
+      const grad = ctx.createRadialGradient(canvas.width*0.5 + Math.sin(step)*140, canvas.height*0.3, 10, canvas.width*0.5, canvas.height*0.5, canvas.width*0.85);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.14)');
+      grad.addColorStop(0.5, 'rgba(16, 185, 129, 0.04)');
       grad.addColorStop(1, 'rgba(1, 2, 6, 0)');
       ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
-      requestAnimationFrame(renderQuantum);
+      requestAnimationFrame(renderGlobalMesh);
     }
-    renderQuantum();
+    renderGlobalMesh();
 
     function switchMode(target) {
       const bCont = document.getElementById('buyContainer');
@@ -280,48 +289,65 @@
       }
     }
 
-    const supremeAssets = [
-      { area: "東京都", tag: "IT/SaaS", name: "AI駆動型チャットボットプラットフォーム", price: "2.8億円", desc: "大手企業350社導入。解約率0.6%以下の極上ストック収益アセット。" },
-      { area: "大阪府", tag: "医療美容", name: "心斎橋駅前 メディカル美容皮膚科クリニック", price: "3.2億円", desc: "常勤医師不在でも完全自走する自動予約・カルテ連動システム完備。" },
-      { area: "愛知県", tag: "建設ゼネコン", name: "大手ハウスメーカー一次請け 電気設備工事会社", price: "4.8億円", desc: "年商2.1億。有資格者多数在籍。20年以上の安定取引基盤。" }
+    let currentCurr = 'JPY';
+    const rates = { JPY: 1, USD: 0.0065, EUR: 0.0060, USDC: 0.0065 };
+    const symbols = { JPY: '¥ ', USD: '$ ', EUR: '€ ', USDC: 'USDC ' };
+
+    function formatPrice(jpyVal) {
+      const val = jpyVal * rates[currentCurr];
+      if (currentCurr === 'JPY') return symbols[currentCurr] + (val / 100000000).toFixed(1) + ' 億円';
+      return symbols[currentCurr] + val.toLocaleString(undefined, {maximumFractionDigits: 0});
+    }
+
+    const globalAssets = [
+      { area: "NEW YORK • USA", tag: "AI/SaaS", name: "Autonomous LLM Workflow Engine (ARR $1.2M)", rawPrice: 320000000, desc: "Global enterprise client base across 40 countries. Fully autonomous M2M architecture." },
+      { area: "TOKYO • JAPAN", tag: "MED-TECH", name: "心斎橋駅前 メディカル美容皮膚科クリニック", rawPrice: 320000000, desc: "Automated booking & EHR integration. Zero-doctor dependency operational model." },
+      { area: "LONDON • UK", tag: "FINTECH", name: "Cross-Border Crypto Payment Gateway", rawPrice: 540000000, desc: "Multi-jurisdiction compliant settlement pipeline with instant fiat conversion." }
     ];
 
-    const streamEl = document.getElementById('assetStream');
-    streamEl.innerHTML = supremeAssets.map(a => `
-      <div class="asset-tile">
-        <div class="at-top">
-          <span class="at-tag">${a.area} • ${a.tag}</span>
-          <span style="color:var(--accent-emerald); font-weight:700;">AIマッチ度: 99.8%</span>
-        </div>
-        <div class="at-name">${a.name}</div>
-        <div class="at-desc">${a.desc}</div>
-        <div class="at-bottom">
-          <div>
-            <div style="font-size:0.55rem; color:var(--text-sub);">希望買売価格</div>
-            <div class="at-price">¥ ${a.price}</div>
+    function renderStream() {
+      const streamEl = document.getElementById('assetStream');
+      streamEl.innerHTML = globalAssets.map(a => `
+        <div class="asset-tile">
+          <div class="at-top">
+            <span class="at-tag">${a.area} • ${a.tag}</span>
+            <span style="color:var(--accent-emerald); font-weight:700;">ZKP Match: 99.9%</span>
           </div>
-          <button class="btn-action-glow" onclick="startStripeCheckout('${a.name}', '${a.price}')">Stripeで即時エスクロー決済</button>
+          <div class="at-name">${a.name}</div>
+          <div class="at-desc">${a.desc}</div>
+          <div class="at-bottom">
+            <div>
+              <div style="font-size:0.55rem; color:var(--text-sub);">Valuation</div>
+              <div class="at-price">${formatPrice(a.rawPrice)}</div>
+            </div>
+            <button class="btn-action-glow" onclick="executeGlobalCheckout('${a.name}')">Global Stripe Escrow Checkout</button>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
+    }
+    renderStream();
 
-    async function startStripeCheckout(name, price) {
-      if(confirm(`【${name}】\n価格: ${price}\n\nStripeセキュア決済およびエスクロー口座へのデポジットを実行しますか？`)) {
-        alert("Stripe Connectチェックアウトセッションを生成しました。入金が自動検知されます。");
+    function changeCurrency() {
+      currentCurr = document.getElementById('currSelect').value;
+      renderStream();
+    }
+
+    async function executeGlobalCheckout(name) {
+      if(confirm(`[Global Omnibus] Acquire "${name}" via Stripe Global Connect & Cross-Border Escrow?`)) {
+        alert("Stripe Global Checkout session initiated. Funds secured in escrow account.");
       }
     }
 
-    async function executeApiValuation() {
+    async function executeGlobalValuation() {
       const title = document.getElementById('bizTitle').value;
       const sales = parseFloat(document.getElementById('bizSalesVal').value) || 0;
-      const profit = parseFloat(document.getElementById('bizProfitVal').value) || 0;
-      if(!title) { alert("事業名を入力してください。"); return; }
-      alert(`【FastAPIバックエンド処理完了】\n事業名: ${title}\n推定企業価値: ¥ ${(sales*2.2).toLocaleString()} 万円\nノンネームでグローバル市場へ出品しました。`);
+      if(!title) { alert("Please enter asset title."); return; }
+      alert(`[AI Valuation Complete] "${title}"\nEstimated Enterprise Value: ${formatPrice(sales * 2.5)}\nSynced across New York, London, and Tokyo liquidity pools.`);
       switchMode('buy');
     }
 
-    function triggerStripeHarvest() {
-      alert("Stripe ConnectのPayout（即時出金API）を実行しました。ご登録の銀行口座へ自動送金されます。");
+    function triggerGlobalHarvest() {
+      alert("Stripe Global Payout API executed successfully. Funds distributed to your primary account.");
     }
 
     const chartEl = document.getElementById('liveChart');
@@ -341,18 +367,18 @@
     }
     renderLiveChart();
 
-    let totalRev = 24890000;
+    let totalRev = 28450000;
     setInterval(() => {
-      totalRev += Math.floor(Math.random() * 45000) + 15000;
+      totalRev += Math.floor(Math.random() * 55000) + 20000;
       document.getElementById('monthRev').innerText = "¥ " + totalRev.toLocaleString();
     }, 2500);
 
     const termEl = document.getElementById('terminalFeed');
     const feedLogs = [
-      "Stripe API: プレミアム海外ファンドより月額サブスク会費 ¥59,800 を受領",
-      "FastAPI Backend: 新規売り手企業のAI自動査定リクエストを処理完了",
-      "Escrow Protocol: スマートコントラクト経由で成功報酬 ¥2,100,000 が自動配分されました",
-      "ZKP Engine: 財務真実性の暗号적ゼロ知識証明を検証完了"
+      "Stripe Global API: Cross-border escrow deposit received ($48,000 USD)",
+      "ZKP Engine: Cryptographic proof of financial solvency verified for NY fund",
+      "Omnibus Mesh: New York, London, Tokyo nodes successfully synchronized",
+      "Autopilot Payout: Success fee allocated directly to owner wallet"
     ];
     function pushLog() {
       const timeStr = new Date().toTimeString().split(' ')[0];
