@@ -148,4 +148,246 @@
   <div class="app-viewport">
     
     <header>
-      <div class="brand
+      <div class="brand-title">M&A-SWARM OMNIBUS v12.0 GLOBAL</div>
+      <div class="global-controls">
+        <select class="select-curr" id="currSelect" onchange="changeCurrency()">
+          <option value="JPY">JPY (¥)</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="USDC">USDC (Crypto)</option>
+        </select>
+        <select class="select-lang">
+          <option>ENGLISH</option>
+          <option selected>日本語</option>
+          <option>中文</option>
+          <option>DEUTSCH</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="owner-ticker">
+      <div class="ot-item">
+        <div class="ot-lbl">GLOBAL REVENUE (24H)</div>
+        <div class="ot-val" id="todayRev" style="color:var(--accent-emerald)">¥ 1,240,500</div>
+      </div>
+      <div class="ot-item">
+        <div class="ot-lbl">MONTHLY AUTOPILOT POOL</div>
+        <div class="ot-val" id="monthRev" style="color:var(--accent-cyan)">¥ 28,450,000</div>
+      </div>
+      <div class="ot-item">
+        <div class="ot-lbl">CROSS-BORDER MATCH</div>
+        <div class="ot-val" style="color:var(--accent-gold)">99.8%</div>
+      </div>
+      <div class="ot-item">
+        <div class="ot-lbl">GLOBAL FUNDS</div>
+        <div class="ot-val" style="color:var(--accent-purple)">3,420 社</div>
+      </div>
+    </div>
+
+    <div class="global-grid">
+      
+      <div class="panel">
+        <div class="super-switcher">
+          <div class="ss-btn active buy" id="modeBuy" onclick="switchMode('buy')">
+            <div class="ss-title" style="color:var(--accent-cyan)">🛒 CROSS-BORDER ACQUISITION</div>
+            <div class="ss-sub">ZKP Verified & Instant Escrow</div>
+          </div>
+          <div class="ss-btn sell" id="modeSell" onclick="switchMode('sell')">
+            <div class="ss-title" style="color:var(--accent-orange)">🚀 GLOBAL ASSET LISTING</div>
+            <div class="ss-sub">10s AI Valuation & Non-Name</div>
+          </div>
+        </div>
+
+        <div id="buyContainer" style="display:flex; flex-direction:column; gap:6px; flex-grow:1; min-height:0;">
+          <div class="panel-heading">
+            <span>GLOBAL VERIFIED ASSET STREAM</span>
+            <span style="color:var(--accent-cyan); font-size:0.58rem;">NYC • LON • SIN • TYO</span>
+          </div>
+          <div class="market-scroll" id="assetStream"></div>
+        </div>
+
+        <div id="sellContainer" style="display:none; flex-direction:column; gap:6px; flex-grow:1;">
+          <div class="panel-heading">
+            <span>GLOBAL AI VALUATION WIZARD</span>
+            <span style="color:var(--accent-orange); font-size:0.58rem;">CROSS-BORDER SYNC</span>
+          </div>
+          <div class="ai-wizard-box">
+            <div class="input-field-group">
+              <div class="input-lbl">Enterprise / Asset Name</div>
+              <input type="text" id="bizTitle" class="supreme-input" placeholder="e.g. AI Autonomous SaaS Platform">
+            </div>
+            <div class="input-field-group">
+              <div class="input-lbl">Annual Revenue (Local Currency)</div>
+              <input type="number" id="bizSalesVal" class="supreme-input" placeholder="180000000">
+            </div>
+            <div class="input-field-group">
+              <div class="input-lbl">Net Annual Profit (Local Currency)</div>
+              <input type="number" id="bizProfitVal" class="supreme-input" placeholder="65000000">
+            </div>
+            <button class="btn-wizard-submit" onclick="executeGlobalValuation()">Execute AI Valuation & Global Listing</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <span>GLOBAL LIQUIDITY TELEMETRY</span>
+          <span style="color:var(--accent-emerald); font-size:0.58rem;">OMNIBUS MESH ACTIVE</span>
+        </div>
+        <div class="right-viz-stack">
+          <canvas id="liveChart" class="chart-canvas-box"></canvas>
+          <div class="panel-heading" style="margin-top:2px;">
+            <span>GLOBAL SWARM AGENT AUTOPILOT LOG</span>
+          </div>
+          <div class="terminal-output" id="terminalFeed"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      <button class="harvest-glow-btn" onclick="triggerGlobalHarvest()">Execute Global Stripe Payout (Instant)</button>
+      <div style="display:flex; gap:10px;">
+        <span style="cursor:pointer;" onclick="alert('Global Legal Disclosures & Cross-Border Compliance')">Legal</span>
+        <span>|</span>
+        <span style="cursor:pointer;" onclick="alert('Terms of Global Omnibus Service')">Terms</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    const canvas = document.getElementById('globalCanvas');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    let step = 0;
+    function renderGlobalMesh() {
+      step += 0.003;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const grad = ctx.createRadialGradient(canvas.width*0.5 + Math.sin(step)*140, canvas.height*0.3, 10, canvas.width*0.5, canvas.height*0.5, canvas.width*0.85);
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.14)');
+      grad.addColorStop(0.5, 'rgba(16, 185, 129, 0.04)');
+      grad.addColorStop(1, 'rgba(1, 2, 6, 0)');
+      ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+      requestAnimationFrame(renderGlobalMesh);
+    }
+    renderGlobalMesh();
+
+    function switchMode(target) {
+      const bCont = document.getElementById('buyContainer');
+      const sCont = document.getElementById('sellContainer');
+      const bBtn = document.getElementById('modeBuy');
+      const sBtn = document.getElementById('modeSell');
+      if(target === 'buy') {
+        bCont.style.display = 'flex'; sCont.style.display = 'none';
+        bBtn.classList.add('active'); sBtn.classList.remove('active');
+      } else {
+        bCont.style.display = 'none'; sCont.style.display = 'flex';
+        sBtn.classList.add('active'); bBtn.classList.remove('active');
+      }
+    }
+
+    let currentCurr = 'JPY';
+    const rates = { JPY: 1, USD: 0.0065, EUR: 0.0060, USDC: 0.0065 };
+    const symbols = { JPY: '¥ ', USD: '$ ', EUR: '€ ', USDC: 'USDC ' };
+
+    function formatPrice(jpyVal) {
+      const val = jpyVal * rates[currentCurr];
+      if (currentCurr === 'JPY') return symbols[currentCurr] + (val / 100000000).toFixed(1) + ' 億円';
+      return symbols[currentCurr] + val.toLocaleString(undefined, {maximumFractionDigits: 0});
+    }
+
+    const globalAssets = [
+      { area: "NEW YORK • USA", tag: "AI/SaaS", name: "Autonomous LLM Workflow Engine (ARR $1.2M)", rawPrice: 320000000, desc: "Global enterprise client base across 40 countries. Fully autonomous M2M architecture." },
+      { area: "TOKYO • JAPAN", tag: "MED-TECH", name: "心斎橋駅前 メディカル美容皮膚科クリニック", rawPrice: 320000000, desc: "Automated booking & EHR integration. Zero-doctor dependency operational model." },
+      { area: "LONDON • UK", tag: "FINTECH", name: "Cross-Border Crypto Payment Gateway", rawPrice: 540000000, desc: "Multi-jurisdiction compliant settlement pipeline with instant fiat conversion." }
+    ];
+
+    function renderStream() {
+      const streamEl = document.getElementById('assetStream');
+      streamEl.innerHTML = globalAssets.map(a => `
+        <div class="asset-tile">
+          <div class="at-top">
+            <span class="at-tag">${a.area} • ${a.tag}</span>
+            <span style="color:var(--accent-emerald); font-weight:700;">ZKP Match: 99.9%</span>
+          </div>
+          <div class="at-name">${a.name}</div>
+          <div class="at-desc">${a.desc}</div>
+          <div class="at-bottom">
+            <div>
+              <div style="font-size:0.55rem; color:var(--text-sub);">Valuation</div>
+              <div class="at-price">${formatPrice(a.rawPrice)}</div>
+            </div>
+            <button class="btn-action-glow" onclick="executeGlobalCheckout('${a.name}')">Global Stripe Escrow Checkout</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    renderStream();
+
+    function changeCurrency() {
+      currentCurr = document.getElementById('currSelect').value;
+      renderStream();
+    }
+
+    async function executeGlobalCheckout(name) {
+      if(confirm(`[Global Omnibus] Acquire "${name}" via Stripe Global Connect & Cross-Border Escrow?`)) {
+        alert("Stripe Global Checkout session initiated. Funds secured in escrow account.");
+      }
+    }
+
+    async function executeGlobalValuation() {
+      const title = document.getElementById('bizTitle').value;
+      const sales = parseFloat(document.getElementById('bizSalesVal').value) || 0;
+      if(!title) { alert("Please enter asset title."); return; }
+      alert(`[AI Valuation Complete] "${title}"\nEstimated Enterprise Value: ${formatPrice(sales * 2.5)}\nSynced across New York, London, and Tokyo liquidity pools.`);
+      switchMode('buy');
+    }
+
+    function triggerGlobalHarvest() {
+      alert("Stripe Global Payout API executed successfully. Funds distributed to your primary account.");
+    }
+
+    const chartEl = document.getElementById('liveChart');
+    const chCtx = chartEl.getContext('2d');
+    function renderLiveChart() {
+      chartEl.width = chartEl.clientWidth; chartEl.height = chartEl.clientHeight;
+      chCtx.clearRect(0,0,chartEl.width,chartEl.height);
+      chCtx.beginPath();
+      chCtx.strokeStyle = '#38bdf8'; chCtx.lineWidth = 2.5;
+      for(let i=0; i<18; i++) {
+        let px = (i / 17) * chartEl.width;
+        let py = chartEl.height - (Math.sin(i * 0.35 + Date.now()*0.002) * (chartEl.height*0.3) + chartEl.height*0.5);
+        if(i===0) chCtx.moveTo(px,py); else chCtx.lineTo(px,py);
+      }
+      chCtx.stroke();
+      requestAnimationFrame(renderLiveChart);
+    }
+    renderLiveChart();
+
+    let totalRev = 28450000;
+    setInterval(() => {
+      totalRev += Math.floor(Math.random() * 55000) + 20000;
+      document.getElementById('monthRev').innerText = "¥ " + totalRev.toLocaleString();
+    }, 2500);
+
+    const termEl = document.getElementById('terminalFeed');
+    const feedLogs = [
+      "Stripe Global API: Cross-border escrow deposit received ($48,000 USD)",
+      "ZKP Engine: Cryptographic proof of financial solvency verified for NY fund",
+      "Omnibus Mesh: New York, London, Tokyo nodes successfully synchronized",
+      "Autopilot Payout: Success fee allocated directly to owner wallet"
+    ];
+    function pushLog() {
+      const timeStr = new Date().toTimeString().split(' ')[0];
+      const text = feedLogs[Math.floor(Math.random() * feedLogs.length)];
+      const row = document.createElement('div');
+      row.innerHTML = `<span style="color:var(--text-sub)">[${timeStr}]</span> ${text}`;
+      termEl.prepend(row);
+      if (termEl.children.length > 8) termEl.removeChild(termEl.lastChild);
+    }
+    setInterval(pushLog, 2000); pushLog();
+  </script>
+</body>
+</html>
