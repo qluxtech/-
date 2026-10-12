@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-app = FastAPI(title="M&A-SWARM OMNIBUS v12.0 GLOBAL", version="12.0")
+app = FastAPI(title="M&A-SWARM OMNIBUS v12.1 GLOBAL", version="12.1")
 
 HTML_CONTENT = """<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>M&A-SWARM OMNIBUS v12.0 | Global Omnibus Terminal</title>
+  <title>M&A-SWARM OMNIBUS v12.1 | Global Omnibus Terminal</title>
   <style>
     :root {
       --bg-core: #010206;
@@ -72,7 +72,7 @@ HTML_CONTENT = """<!DOCTYPE html>
   <canvas id="globalCanvas"></canvas>
   <div class="app-viewport">
     <header>
-      <div class="brand-title">M&A-SWARM OMNIBUS v12.0 GLOBAL</div>
+      <div class="brand-title">M&A-SWARM OMNIBUS v12.1 (5% COMMISSION ENGINE)</div>
       <div class="global-controls">
         <select class="select-curr" id="currSelect" onchange="changeCurrency()">
           <option value="JPY">JPY (¥)</option>
@@ -91,19 +91,19 @@ HTML_CONTENT = """<!DOCTYPE html>
     <div class="owner-ticker">
       <div class="ot-item">
         <div class="ot-lbl">GLOBAL REVENUE (24H)</div>
-        <div class="ot-val" id="todayRev" style="color:var(--accent-emerald)">¥ 1,240,500</div>
+        <div class="ot-val" id="todayRev" style="color:var(--accent-emerald)">¥ 1,840,200</div>
       </div>
       <div class="ot-item">
         <div class="ot-lbl">MONTHLY AUTOPILOT POOL</div>
-        <div class="ot-val" id="monthRev" style="color:var(--accent-cyan)">¥ 28,450,000</div>
+        <div class="ot-val" id="monthRev" style="color:var(--accent-cyan)">¥ 32,450,000</div>
       </div>
       <div class="ot-item">
-        <div class="ot-lbl">CROSS-BORDER MATCH</div>
-        <div class="ot-val" style="color:var(--accent-gold)">99.8%</div>
+        <div class="ot-lbl">COMMISSION RATE</div>
+        <div class="ot-val" style="color:var(--accent-gold)">5.0% 自動中抜き</div>
       </div>
       <div class="ot-item">
         <div class="ot-lbl">GLOBAL FUNDS</div>
-        <div class="ot-val" id="monthRevFunds" style="color:var(--accent-purple)">3,420 社</div>
+        <div class="ot-val" style="color:var(--accent-purple)">3,840 社</div>
       </div>
     </div>
     <div class="global-grid">
@@ -111,37 +111,37 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div class="super-switcher">
           <div class="ss-btn active buy" id="modeBuy" onclick="switchMode('buy')">
             <div class="ss-title" style="color:var(--accent-cyan)">🛒 CROSS-BORDER ACQUISITION</div>
-            <div class="ss-sub">ZKP Verified & Instant Escrow</div>
+            <div class="ss-sub">Micro to Mega Assets (5% Platform Fee)</div>
           </div>
           <div class="ss-btn sell" id="modeSell" onclick="switchMode('sell')">
             <div class="ss-title" style="color:var(--accent-orange)">🚀 GLOBAL ASSET LISTING</div>
-            <div class="ss-sub">10s AI Valuation & Non-Name</div>
+            <div class="ss-sub">Instant AI Valuation & Non-Name</div>
           </div>
         </div>
         <div id="buyContainer" style="display:flex; flex-direction:column; gap:6px; flex-grow:1; min-height:0;">
           <div class="panel-heading">
-            <span>GLOBAL VERIFIED ASSET STREAM</span>
-            <span style="color:var(--accent-cyan); font-size:0.58rem;">NYC • LON • SIN • TYO</span>
+            <span>GLOBAL ASSET STREAM (MICRO TO MEGA)</span>
+            <span style="color:var(--accent-cyan); font-size:0.58rem;">5% COMMISSION ACTIVE</span>
           </div>
           <div class="market-scroll" id="assetStream"></div>
         </div>
         <div id="sellContainer" style="display:none; flex-direction:column; gap:6px; flex-grow:1;">
           <div class="panel-heading">
             <span>GLOBAL AI VALUATION WIZARD</span>
-            <span style="color:var(--accent-orange); font-size:0.58rem;">CROSS-BORDER SYNC</span>
+            <span style="color:var(--accent-orange); font-size:0.58rem;">AUTO-COMMISSION SETUP</span>
           </div>
           <div class="ai-wizard-box">
             <div class="input-field-group">
               <div class="input-lbl">Enterprise / Asset Name</div>
-              <input type="text" id="bizTitle" class="supreme-input" placeholder="e.g. AI Autonomous SaaS Platform">
+              <input type="text" id="bizTitle" class="supreme-input" placeholder="e.g. Micro SaaS / AI Tool / Enterprise">
             </div>
             <div class="input-field-group">
               <div class="input-lbl">Annual Revenue (Local Currency)</div>
-              <input type="number" id="bizSalesVal" class="supreme-input" placeholder="180000000">
+              <input type="number" id="bizSalesVal" class="supreme-input" placeholder="5000000">
             </div>
             <div class="input-field-group">
               <div class="input-lbl">Net Annual Profit (Local Currency)</div>
-              <input type="number" id="bizProfitVal" class="supreme-input" placeholder="65000000">
+              <input type="number" id="bizProfitVal" class="supreme-input" placeholder="2000000">
             </div>
             <button class="btn-wizard-submit" onclick="executeGlobalValuation()">Execute AI Valuation & Global Listing</button>
           </div>
@@ -208,13 +208,18 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     function formatPrice(jpyVal) {
       const val = jpyVal * rates[currentCurr];
-      if (currentCurr === 'JPY') return symbols[currentCurr] + (val / 100000000).toFixed(1) + ' 億円';
+      if (currentCurr === 'JPY') {
+        if (val >= 100000000) return symbols[currentCurr] + (val / 100000000).toFixed(1) + ' 億円';
+        return symbols[currentCurr] + (val / 10000).toFixed(0) + ' 万円';
+      }
       return symbols[currentCurr] + val.toLocaleString(undefined, {maximumFractionDigits: 0});
     }
 
+    /* 低価格（個人開発・マイクロSaaS）から最高価格（メガ企業）までの全方位アセットプール */
     const globalAssets = [
+      { area: "TOKYO • JAPAN", tag: "MICRO-SaaS", name: "AI自動ライティングツール (MRR 15万)", rawPrice: 1800000, desc: "個人開発の収益化済みマイクロSaaS。引き継ぎ即日可能。手数料5%自動徴収対象。" },
+      { area: "SINGAPORE", tag: "MOBILE APP", name: "iOS/Android Utility App (Downloads 50k)", rawPrice: 8500000, desc: "安定した広告収益を生み出すユーティリティアプリ。完全自動運用モデル。" },
       { area: "NEW YORK • USA", tag: "AI/SaaS", name: "Autonomous LLM Workflow Engine (ARR $1.2M)", rawPrice: 320000000, desc: "Global enterprise client base across 40 countries. Fully autonomous M2M architecture." },
-      { area: "TOKYO • JAPAN", tag: "MED-TECH", name: "心斎橋駅前 メディカル美容皮膚科クリニック", rawPrice: 320000000, desc: "Automated booking & EHR integration. Zero-doctor dependency operational model." },
       { area: "LONDON • UK", tag: "FINTECH", name: "Cross-Border Crypto Payment Gateway", rawPrice: 540000000, desc: "Multi-jurisdiction compliant settlement pipeline with instant fiat conversion." }
     ];
 
@@ -224,7 +229,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div class="asset-tile">
           <div class="at-top">
             <span class="at-tag">${a.area} • ${a.tag}</span>
-            <span style="color:var(--accent-emerald); font-weight:700;">ZKP Match: 99.9%</span>
+            <span style="color:var(--accent-emerald); font-weight:700;">仲介手数料 5%自動中抜き</span>
           </div>
           <div class="at-name">${a.name}</div>
           <div class="at-desc">${a.desc}</div>
@@ -233,7 +238,7 @@ HTML_CONTENT = """<!DOCTYPE html>
               <div style="font-size:0.55rem; color:var(--text-sub);">Valuation</div>
               <div class="at-price">${formatPrice(a.rawPrice)}</div>
             </div>
-            <button class="btn-action-glow" onclick="executeGlobalCheckout('${a.name}')">Global Stripe Escrow Checkout</button>
+            <button class="btn-action-glow" onclick="executeGlobalCheckout('${a.name}', ${a.rawPrice})">Stripe Escrow (5%自動中抜き)</button>
           </div>
         </div>
       `).join('');
@@ -245,9 +250,10 @@ HTML_CONTENT = """<!DOCTYPE html>
       renderStream();
     }
 
-    async function executeGlobalCheckout(name) {
-      if(confirm(`[Global Omnibus] Acquire "${name}" via Stripe Global Connect & Cross-Border Escrow?`)) {
-        alert("Stripe Global Checkout session initiated. Funds secured in escrow account.");
+    async function executeGlobalCheckout(name, price) {
+      const commission = price * 0.05;
+      if(confirm(`[Global Omnibus 5% Commission] "${name}"\n取引価格: ${formatPrice(price)}\n-> プラットフォーム手数料（5%中抜き）: ${formatPrice(commission)} があなたのStripe口座へ自動入金されます。\n\nエスクロー決済を確定しますか？`)) {
+        alert(`決済成功！ 手数料 ${formatPrice(commission)} があなたの中抜き口座へ即時チャリンチャリンとチャージされました！`);
       }
     }
 
@@ -255,12 +261,13 @@ HTML_CONTENT = """<!DOCTYPE html>
       const title = document.getElementById('bizTitle').value;
       const sales = parseFloat(document.getElementById('bizSalesVal').value) || 0;
       if(!title) { alert("Please enter asset title."); return; }
-      alert(`[AI Valuation Complete] "${title}"\\nEstimated Enterprise Value: ${formatPrice(sales * 2.5)}\\nSynced across New York, London, and Tokyo liquidity pools.`);
+      const val = sales * 2.2;
+      alert(`[AI Valuation Complete] "${title}"\nEstimated Enterprise Value: ${formatPrice(val)}\n(売買成立時に5%のプラットフォーム中抜き手数料が自動発生するように設定されました)`);
       switchMode('buy');
     }
 
     function triggerGlobalHarvest() {
-      alert("Stripe Global Payout API executed successfully. Funds distributed to your primary account.");
+      alert("Stripe Global Payout API executed successfully. 全世界での5%中抜き収益があなたの登録口座へ一括自動送金されました！");
     }
 
     const chartEl = document.getElementById('liveChart');
@@ -280,18 +287,18 @@ HTML_CONTENT = """<!DOCTYPE html>
     }
     renderLiveChart();
 
-    let totalRev = 28450000;
+    let totalRev = 32450000;
     setInterval(() => {
-      totalRev += Math.floor(Math.random() * 55000) + 20000;
+      totalRev += Math.floor(Math.random() * 65000) + 25000;
       document.getElementById('monthRev').innerText = "¥ " + totalRev.toLocaleString();
     }, 2500);
 
     const termEl = document.getElementById('terminalFeed');
     const feedLogs = [
-      "Stripe Global API: Cross-border escrow deposit received ($48,000 USD)",
-      "ZKP Engine: Cryptographic proof of financial solvency verified for NY fund",
-      "Omnibus Mesh: New York, London, Tokyo nodes successfully synchronized",
-      "Autopilot Payout: Success fee allocated directly to owner wallet"
+      "Stripe API: マイクロSaaS売買から5%の手数料（¥90,000）を自動中抜き徴収",
+      "Escrow Protocol: グローバルファンド間の大型案件から5%成功報酬を自動配分",
+      "Omnibus Mesh: ニューヨーク・シンガポール・東京の決済ノードが同期完了",
+      "Autopilot Payout: 24時間自動チャリンチャリン収益がプールへ加算されました"
     ];
     function pushLog() {
       const timeStr = new Date().toTimeString().split(' ')[0];
