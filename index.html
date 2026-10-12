@@ -357,4 +357,12 @@
     function pushLog() {
       const timeStr = new Date().toTimeString().split(' ')[0];
       const text = feedLogs[Math.floor(Math.random() * feedLogs.length)];
-      const row = document.createElement
+      const row = document.createElement('div');
+      row.innerHTML = `<span style="color:var(--text-sub)">[${timeStr}]</span> ${text}`;
+      termEl.prepend(row);
+      if (termEl.children.length > 8) termEl.removeChild(termEl.lastChild);
+    }
+    setInterval(pushLog, 2000); pushLog();
+  </script>
+</body>
+</html>
