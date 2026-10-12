@@ -1,23 +1,8 @@
-import os
-from fastapi import FastAPI, Response
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
-import stripe
 
 app = FastAPI(title="M&A-SWARM OMNIBUS v12.0 GLOBAL", version="12.0")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_live_sample_key_placeholder")
-
-# 最新v12.0グローバルHTMLをFastAPI内から直接完全配信
 HTML_CONTENT = """<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -118,7 +103,7 @@ HTML_CONTENT = """<!DOCTYPE html>
       </div>
       <div class="ot-item">
         <div class="ot-lbl">GLOBAL FUNDS</div>
-        <div class="ot-val" style="color:var(--accent-purple)">3,420 社</div>
+        <div class="ot-val" id="monthRevFunds" style="color:var(--accent-purple)">3,420 社</div>
       </div>
     </div>
     <div class="global-grid">
@@ -325,7 +310,3 @@ HTML_CONTENT = """<!DOCTYPE html>
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     return HTML_CONTENT
-
-@app.post("/api/valuation")
-def ai_valuation(data: dict):
-    return {"status": "SUCCESS", "message": "Global AI Valuation synced across nodes."}
